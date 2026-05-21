@@ -66,7 +66,7 @@ getNextWord(deck, allWords):
 
 - `useState` in `App.jsx`, persisted to `localStorage` as `learnMode`.
 - Takes effect on the next word; current word finishes its cycle normally.
-- UI: checkbox/switch labelled **"Słuchaj najpierw"** in the top bar beside the score.
+- UI: checkbox/switch labelled **"Podpowiedz"** in the top bar beside the score.
 - `GameDisplay` receives: `learnMode`, `onLearnModeChange`, `onSpeak`, `isSpeaking`, `isListening`.
 
 ---
@@ -83,8 +83,8 @@ const { speak, isSpeaking } = useSpeechSynthesis()
 
 ### Speaker button behaviour
 
-- Always visible regardless of learn mode.
-- Disabled only while `isSpeaking` (TTS is already playing — tap replays from start instead).
+- Always visible and always enabled.
+- On tap while TTS playing: `speak()` calls `speechSynthesis.cancel()` internally, then replays the word. After the new utterance ends, listening restarts.
 - On tap while `isListening`: stops recognition, speaks, restarts recognition after TTS ends.
 - On tap while idle: speaks, then restarts recognition after TTS ends.
 
