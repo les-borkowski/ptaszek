@@ -1,0 +1,9 @@
+[
+  { "id": 1, "polish": "kwadrat",  "english": "square",   "image": "🟥" },
+  { "id": 2, "polish": "koło",     "english": "circle",   "image": "🔵" },
+  { "id": 3, "polish": "trójkąt", "english": "triangle", "image": "🔺" },
+  { "id": 4, "polish": "pies",     "english": "dog",      "image": "🐶" },
+  { "id": 5, "polish": "kot",      "english": "cat",      "image": "🐱" },
+  { "id": 6, "polish": "jabłko",  "english": "apple",    "image": "🍎" },
+  { "id": 7, "polish": "dom",      "english": "house",    "image": "🏠" }
+]
