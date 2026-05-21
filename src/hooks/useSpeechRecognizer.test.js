@@ -101,4 +101,62 @@ describe('useSpeechRecognizer', () => {
     act(() => { result.current.start() })
     expect(result.current.transcript).toBe('')
   })
+
+  describe('watchdog', () => {
+    beforeEach(() => { vi.useFakeTimers() })
+    afterEach(() => { vi.useRealTimers() })
+
+    test('restarts recognition after 8 s with no result', () => {
+      const { result } = renderHook(() => useSpeechRecognizer())
+      act(() => { result.current.start() })
+      expect(mockRecognition.start).toHaveBeenCalledTimes(1)
+
+      act(() => { vi.advanceTimersByTime(8000) })
+
+      expect(mockRecognition.stop).toHaveBeenCalledTimes(1)
+      expect(mockRecognition.start).toHaveBeenCalledTimes(2)
+    })
+
+    test('watchdog is cancelled when onresult fires', () => {
+      const { result } = renderHook(() => useSpeechRecognizer())
+      act(() => { result.current.start() })
+      act(() => {
+        mockRecognition.onresult({ results: [[{ transcript: 'pies' }]], resultIndex: 0 })
+      })
+      act(() => { vi.advanceTimersByTime(8000) })
+      expect(mockRecognition.start).toHaveBeenCalledTimes(1)
+    })
+
+    test('watchdog is cancelled when onend fires', () => {
+      const { result } = renderHook(() => useSpeechRecognizer())
+      act(() => { result.current.start() })
+      act(() => { mockRecognition.onend() })
+      act(() => { vi.advanceTimersByTime(8000) })
+      expect(mockRecognition.start).toHaveBeenCalledTimes(1)
+    })
+
+    test('watchdog is cancelled when stop() is called', () => {
+      const { result } = renderHook(() => useSpeechRecognizer())
+      act(() => { result.current.start() })
+      act(() => { result.current.stop() })
+      act(() => { vi.advanceTimersByTime(8000) })
+      expect(mockRecognition.start).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('aborted error', () => {
+    test('aborted onerror does not set error state', () => {
+      const { result } = renderHook(() => useSpeechRecognizer())
+      act(() => { result.current.start() })
+      act(() => { mockRecognition.onerror({ error: 'aborted' }) })
+      expect(result.current.error).toBeNull()
+    })
+
+    test('non-aborted onerror still sets error state', () => {
+      const { result } = renderHook(() => useSpeechRecognizer())
+      act(() => { result.current.start() })
+      act(() => { mockRecognition.onerror({ error: 'not-allowed' }) })
+      expect(result.current.error).toBe('not-allowed')
+    })
+  })
 })
