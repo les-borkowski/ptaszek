@@ -36,7 +36,11 @@ describe('App', () => {
 
   test('renders an emoji from the word list on startup', () => {
     render(<App />)
-    const allImages = ['🟥', '🔵', '🔺', '🐶', '🐱', '🍎', '🏠']
+    const allImages = [
+      '🟥', '🔵', '🔺', '▭', '💎', '⭐', '❤️', '✝️', '➡️', '🌙',
+      '🔴', '🟨', '🟢', '🟠', '🟣', '🌸', '⚫', '⚪', '🩶',
+      '🐶', '🐱', '🐴', '🐄', '🐷', '🐔', '🦆', '🐐', '🐑', '🐰'
+    ]
     const found = allImages.some((img) => screen.queryByText(img) !== null)
     expect(found).toBe(true)
   })
