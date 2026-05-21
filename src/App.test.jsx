@@ -18,19 +18,32 @@ vi.mock('./utils/soundEffects', () => ({
   playError: vi.fn(),
 }))
 
+vi.mock('./hooks/useSpeechSynthesis', () => ({
+  useSpeechSynthesis: vi.fn(() => ({
+    speak: vi.fn(),
+    isSpeaking: false,
+  })),
+}))
+
 import App from './App'
 import { useSpeechRecognizer } from './hooks/useSpeechRecognizer'
+import { useSpeechSynthesis } from './hooks/useSpeechSynthesis'
 import { playSuccess, playError } from './utils/soundEffects'
 
 describe('App', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    localStorage.removeItem('learnMode')
     useSpeechRecognizer.mockReturnValue({
       isListening: false,
       transcript: '',
       error: null,
       start: vi.fn(),
       stop: vi.fn(),
+    })
+    useSpeechSynthesis.mockReturnValue({
+      speak: vi.fn(),
+      isSpeaking: false,
     })
   })
 
@@ -89,5 +102,35 @@ describe('App', () => {
     expect(playSuccess).toHaveBeenCalledTimes(
       screen.queryByTestId('status-indicator')?.classList.contains('correct') ? 1 : 0
     )
+  })
+
+  test('calls speak() on mount when learnMode is true', () => {
+    localStorage.setItem('learnMode', 'true')
+    const mockSpeak = vi.fn()
+    useSpeechSynthesis.mockReturnValue({ speak: mockSpeak, isSpeaking: false })
+    render(<App />)
+    expect(mockSpeak).toHaveBeenCalledTimes(1)
+    localStorage.removeItem('learnMode')
+  })
+
+  test('does not call speak() on mount when learnMode is false', () => {
+    localStorage.removeItem('learnMode')
+    const mockSpeak = vi.fn()
+    useSpeechSynthesis.mockReturnValue({ speak: mockSpeak, isSpeaking: false })
+    const mockStart = vi.fn()
+    useSpeechRecognizer.mockReturnValue({ isListening: false, transcript: '', error: null, start: mockStart, stop: vi.fn() })
+    render(<App />)
+    expect(mockSpeak).not.toHaveBeenCalled()
+    expect(mockStart).toHaveBeenCalledTimes(1)
+  })
+
+  test('renders the Podpowiedz toggle', () => {
+    render(<App />)
+    expect(screen.getByLabelText(/Podpowiedz/i)).toBeInTheDocument()
+  })
+
+  test('renders the speaker button', () => {
+    render(<App />)
+    expect(screen.getByRole('button', { name: /Wymów słowo/i })).toBeInTheDocument()
   })
 })

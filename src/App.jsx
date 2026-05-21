@@ -1,36 +1,48 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { GameDisplay } from './components/GameDisplay'
 import { useSpeechRecognizer } from './hooks/useSpeechRecognizer'
+import { useSpeechSynthesis } from './hooks/useSpeechSynthesis'
 import { fuzzyMatch } from './utils/fuzzyMatch'
 import { playSuccess, playError } from './utils/soundEffects'
+import { buildDeck, getNextWord } from './utils/wordDeck'
 import words from './data/words.json'
 import './App.css'
 
-/**
- * Returns a random word from the list, avoiding the word just shown.
- * @param {{ id: number }|null} currentWord
- * @returns {{ id: number, polish: string, english: string, image: string }}
- */
-function getRandomWord(currentWord) {
-  const pool =
-    words.length > 1 && currentWord
-      ? words.filter((w) => w.id !== currentWord.id)
-      : words
-  return pool[Math.floor(Math.random() * pool.length)]
-}
-
 export default function App() {
-  const [currentWord, setCurrentWord] = useState(() => getRandomWord(null))
+  const [wordState, setWordState] = useState(() => {
+    const shuffled = buildDeck(words)
+    return { currentWord: shuffled[0], deck: shuffled.slice(1) }
+  })
+  const { currentWord, deck } = wordState
+
   const [score, setScore] = useState(0)
   const [status, setStatus] = useState('listening')
-  const { transcript, error, start } = useSpeechRecognizer()
+  const [learnMode, setLearnMode] = useState(
+    () => localStorage.getItem('learnMode') === 'true'
+  )
 
-  // Start listening when the component first mounts
+  const { transcript, error, start, stop, isListening } = useSpeechRecognizer()
+  const { speak, isSpeaking } = useSpeechSynthesis()
+  const prevIsSpeakingRef = useRef(false)
+
+  // On each new word: speak (learn mode) or listen directly
   useEffect(() => {
-    start()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    if (learnMode) {
+      speak(currentWord.polish)
+    } else {
+      start()
+    }
+  }, [currentWord]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // React to new transcript results
+  // After TTS finishes (isSpeaking false→true→false), start listening
+  useEffect(() => {
+    if (prevIsSpeakingRef.current && !isSpeaking) {
+      start()
+    }
+    prevIsSpeakingRef.current = isSpeaking
+  }, [isSpeaking]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // React to speech recognition results
   useEffect(() => {
     if (!transcript || status !== 'listening') return
 
@@ -39,9 +51,11 @@ export default function App() {
       setStatus('correct')
       playSuccess()
       setTimeout(() => {
-        setCurrentWord((prev) => getRandomWord(prev))
+        setWordState(({ deck: d }) => {
+          const { word, remainingDeck } = getNextWord(d, words)
+          return { currentWord: word, deck: remainingDeck }
+        })
         setStatus('listening')
-        start()
       }, 1500)
     } else {
       setStatus('incorrect')
@@ -53,6 +67,16 @@ export default function App() {
     }
   }, [transcript]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  const handleLearnModeChange = (value) => {
+    setLearnMode(value)
+    localStorage.setItem('learnMode', String(value))
+  }
+
+  const handleSpeak = () => {
+    if (isListening) stop()
+    speak(currentWord.polish)
+  }
+
   return (
     <div className="app">
       {error && (
@@ -60,7 +84,14 @@ export default function App() {
           ⚠️ Mikrofon niedostępny: {error}. Otwórz w Chrome lub Edge i zezwól na mikrofon.
         </div>
       )}
-      <GameDisplay word={currentWord} score={score} status={status} />
+      <GameDisplay
+        word={currentWord}
+        score={score}
+        status={status}
+        learnMode={learnMode}
+        onLearnModeChange={handleLearnModeChange}
+        onSpeak={handleSpeak}
+      />
     </div>
   )
 }
