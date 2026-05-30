@@ -66,6 +66,11 @@ describe('HearAndTouchDisplay', () => {
     expect(screen.getByRole('button', { name: /Posłuchaj słowa/i })).toBeDisabled()
   })
 
+  test('speaker button is disabled when status is incorrect', () => {
+    render(<HearAndTouchDisplay {...defaultProps} status="incorrect" />)
+    expect(screen.getByRole('button', { name: /Posłuchaj słowa/i })).toBeDisabled()
+  })
+
   test('renders four emoji cards', () => {
     render(<HearAndTouchDisplay {...defaultProps} />)
     const cards = screen.getAllByRole('button').filter(b => b.classList.contains('hat-card'))
