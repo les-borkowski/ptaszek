@@ -61,6 +61,11 @@ describe('HearAndTouchDisplay', () => {
     expect(onSpeak).toHaveBeenCalledTimes(1)
   })
 
+  test('speaker button is disabled when status is correct', () => {
+    render(<HearAndTouchDisplay {...defaultProps} status="correct" />)
+    expect(screen.getByRole('button', { name: /Posłuchaj słowa/i })).toBeDisabled()
+  })
+
   test('renders four emoji cards', () => {
     render(<HearAndTouchDisplay {...defaultProps} />)
     const cards = screen.getAllByRole('button').filter(b => b.classList.contains('hat-card'))

@@ -219,16 +219,17 @@ export function SpeechBubble({ children, style }) {
 }
 
 /* ---------- MicButton — coral paper circle ---------- */
-export function MicButton({ onClick, label = '🎤', ariaLabel = 'Wymów słowo', color = PALETTE.coral }) {
+export function MicButton({ onClick, label = '🎤', ariaLabel = 'Wymów słowo', color = PALETTE.coral, disabled = false }) {
   return (
     <button
       onClick={onClick}
       aria-label={ariaLabel}
       className="paper-mic"
+      disabled={disabled}
       style={{
         background: color,
         border: 'none',
-        cursor: 'pointer',
+        cursor: disabled ? 'default' : 'pointer',
         width: 64,
         height: 64,
         borderRadius: '50%',
@@ -240,6 +241,7 @@ export function MicButton({ onClick, label = '🎤', ariaLabel = 'Wymów słowo'
         filter: 'drop-shadow(4px 6px 0 rgba(42,38,32,0.22))',
         transform: 'rotate(-3deg)',
         transition: 'transform 0.1s ease, filter 0.1s ease',
+        opacity: disabled ? 0.4 : 1,
       }}
     >{label}</button>
   )

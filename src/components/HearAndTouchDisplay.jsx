@@ -60,6 +60,7 @@ export function HearAndTouchDisplay({
               label="🔊"
               ariaLabel="Posłuchaj słowa"
               color={PALETTE.navy}
+              disabled={status !== 'listening'}
             />
           </div>
 
