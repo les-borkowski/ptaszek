@@ -425,3 +425,40 @@ body {
   font-family: var(--f-display); font-size: 15px; font-weight: 700;
   cursor: pointer; filter: drop-shadow(3px 4px 0 rgba(42,38,32,0.15));
 }
+
+/* ---------- Modals ---------- */
+.modal-overlay {
+  position: absolute; inset: 0;
+  background: rgba(42,38,32,0.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100; border-radius: 22px;
+}
+.modal-card {
+  background: var(--kraft); border-radius: 20px; padding: 20px 20px 16px;
+  width: calc(100% - 48px); display: flex; flex-direction: column; gap: 10px;
+  filter: drop-shadow(0 8px 16px rgba(42,38,32,0.28));
+}
+.modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--f-display); color: var(--ink); margin-bottom: 4px;
+}
+.modal-close {
+  background: none; border: none; cursor: pointer;
+  font-size: 18px; color: var(--ink); opacity: 0.6; padding: 4px 8px; border-radius: 8px;
+}
+.cat-row {
+  width: 100%; padding: 12px 16px; border-radius: 24px; border: none;
+  background: var(--cream); font-family: var(--f-display); font-size: 15px;
+  font-weight: 700; color: var(--ink); cursor: pointer;
+  display: flex; gap: 10px; align-items: center;
+  filter: drop-shadow(2px 3px 0 rgba(42,38,32,0.12));
+  transition: background 0.15s;
+}
+.cat-row--mustard { background: var(--mustard); color: #fff; }
+.cat-row--mint    { background: var(--mint); }
+.modal-done-btn {
+  width: 100%; margin-top: 4px; padding: 13px; border-radius: 24px; border: none;
+  background: var(--coral); color: #fff;
+  font-family: var(--f-display); font-size: 16px; font-weight: 700;
+  cursor: pointer; filter: drop-shadow(3px 4px 0 rgba(42,38,32,0.20));
+}
