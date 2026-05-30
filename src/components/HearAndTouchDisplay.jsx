@@ -1,4 +1,4 @@
-import { PALETTE } from './Paper'
+import { PALETTE, PaperChain } from './Paper'
 import { Celebration } from './Celebrations'
 
 export function HearAndTouchDisplay({
@@ -9,12 +9,17 @@ export function HearAndTouchDisplay({
       <div className="game-kraft">
         <div className="game-shell-inner hat-screen">
 
-          <button className="back-btn" onClick={onBack} aria-label="Wróć do menu">← wróć</button>
-
-          <div className="hat-score">
-            <span style={{ fontFamily: 'var(--f-display)', fontWeight: 700, fontSize: 16, color: PALETTE.ink }}>
-              Wynik: {score}
-            </span>
+          {/* Header — back nav + score (left)  |  mode title (right) */}
+          <div className="game-header">
+            <div className="game-header-start">
+              <button className="back-btn" onClick={onBack} aria-label="Wróć do menu">
+                ← wróć
+              </button>
+              <PaperChain score={score} size="md" />
+            </div>
+            <div className="hat-mode-label">
+              <span aria-hidden="true">👂</span> Usłysz i dotknij
+            </div>
           </div>
 
           <div className="hat-prompt">

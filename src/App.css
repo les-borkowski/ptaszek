@@ -84,6 +84,7 @@ body {
   gap: 16px;
   z-index: 3;
   position: relative;
+  width: 100%;
 }
 
 /* Back button + score chain grouped left */
@@ -518,7 +519,19 @@ body {
   display: flex; flex-direction: column; align-items: center;
   justify-content: center; gap: 18px; padding: 28px 22px; position: relative;
 }
-.hat-score { align-self: flex-start; }
+
+/* Mode title badge shown on right side of hat-screen header */
+.hat-mode-label {
+  font-family: var(--f-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-align: right;
+}
 .hat-prompt {
   font-family: var(--f-display); font-size: 18px; font-weight: 700;
   color: var(--ink); text-align: center;
