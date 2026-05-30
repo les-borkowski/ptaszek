@@ -507,3 +507,33 @@ body {
   font-family: var(--f-display); font-size: 18px; font-weight: 800; color: var(--coral); flex-shrink: 0;
 }
 .score-mode { font-size: 16px; flex-shrink: 0; }
+
+/* ---------- Hear-and-Touch ---------- */
+.hat-screen {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 18px; padding: 28px 22px; position: relative;
+}
+.hat-score { align-self: flex-start; }
+.hat-prompt {
+  font-family: var(--f-display); font-size: 18px; font-weight: 700;
+  color: var(--ink); text-align: center;
+}
+.hat-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  width: 100%; max-width: 320px;
+}
+.hat-grid--shake { animation: paper-nudge 0.5s ease; }
+.hat-card {
+  aspect-ratio: 1; border-radius: 20px; border: none;
+  background: var(--cream); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  filter: drop-shadow(4px 6px 0 rgba(42,38,32,0.20));
+  transition: transform 0.1s, filter 0.1s;
+}
+.hat-card:hover:not(:disabled) {
+  transform: scale(1.05) rotate(-2deg);
+  filter: drop-shadow(5px 7px 0 rgba(42,38,32,0.25));
+}
+.hat-card:active:not(:disabled) { transform: scale(0.97); }
+.hat-card:disabled { cursor: default; }
+.hat-emoji { font-size: 72px; line-height: 1; filter: drop-shadow(2px 3px 0 rgba(42,38,32,0.15)); }
