@@ -117,14 +117,14 @@ export function WordCard({ word, size = 220, seed = 7 }) {
         <span style={{
           fontSize: size * 0.42, lineHeight: 1, marginTop: 14,
           filter: 'drop-shadow(3px 4px 0 rgba(42,38,32,0.18))',
-        }}>{word.image}</span>
+        }}>{word.emoji}</span>
         <div style={{
           fontFamily: 'var(--f-display)',
           fontWeight: 700,
           fontSize: size * 0.13,
           color: PALETTE.ink,
           letterSpacing: 0.5,
-        }}>{word.polish}</div>
+        }}>{word.word}</div>
       </PaperLayer>
     </div>
   )

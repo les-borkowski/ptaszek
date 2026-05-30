@@ -16,7 +16,7 @@ function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)] }
 
 export default function App() {
   const [wordState, setWordState] = useState(() => {
-    const shuffled = buildDeck(words)
+    const shuffled = buildDeck(words, null)
     return { currentWord: shuffled[0], deck: shuffled.slice(1) }
   })
   const { currentWord, deck } = wordState
@@ -35,7 +35,7 @@ export default function App() {
   // On each new word: speak (learn mode) or listen directly
   useEffect(() => {
     if (learnMode) {
-      speak(currentWord.polish)
+      speak(currentWord.word)
     } else {
       start()
     }
@@ -53,7 +53,7 @@ export default function App() {
   useEffect(() => {
     if (!transcript || status !== 'listening') return
 
-    if (fuzzyMatch(transcript, currentWord.polish)) {
+    if (fuzzyMatch(transcript, currentWord.word)) {
       const newScore = score + 1
       const isMilestone = newScore % 5 === 0
       const cel = isMilestone ? 'fireworks' : pickRandom(CELEBRATION_KINDS)
@@ -67,7 +67,7 @@ export default function App() {
       setTimeout(() => {
         setCelebration(null)
         setWordState(({ deck: d }) => {
-          const { word, remainingDeck } = getNextWord(d, words)
+          const { word, remainingDeck } = getNextWord(d, words, null)
           return { currentWord: word, deck: remainingDeck }
         })
         setStatus('listening')
@@ -89,7 +89,7 @@ export default function App() {
 
   const handleSpeak = () => {
     if (isListening) stop()
-    speak(currentWord.polish)
+    speak(currentWord.word)
   }
 
   return (

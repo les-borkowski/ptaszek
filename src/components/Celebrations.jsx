@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { WordCard, PaperLayer, PaperStar, ConfettiScrap, PALETTE, PRAISE_COLORS, mulberry32 } from './Paper'
+import { PaperLayer, PaperStar, ConfettiScrap, PALETTE, PRAISE_COLORS, mulberry32 } from './Paper'
 
 /* =====================================================
    Celebrations.jsx — 6 paper-themed celebrations + fireworks.
@@ -44,9 +44,6 @@ function CelConfetti({ playKey, word }) {
   }, [playKey])
   return (
     <div key={playKey} className="cel-root">
-      <div style={{ animation: 'paper-bouncy 0.55s ease' }}>
-        <WordCard word={word} size={180} />
-      </div>
       <div className="cel-center">
         {bits.map((b) => (
           <span key={b.i} style={{
@@ -72,9 +69,6 @@ function CelConfetti({ playKey, word }) {
 function CelStamp({ playKey, word }) {
   return (
     <div key={playKey} className="cel-root">
-      <div style={{ animation: 'paper-shake 0.4s ease 0.4s' }}>
-        <WordCard word={word} size={180} />
-      </div>
       <div style={{
         position: 'absolute', top: '4%',
         animation: 'paper-stamp 0.5s cubic-bezier(.4,1.6,.5,1) 0.05s both',
@@ -107,9 +101,6 @@ function CelMultiply({ playKey, word }) {
   }, [playKey])
   return (
     <div key={playKey} className="cel-root">
-      <div style={{ animation: 'paper-bouncy 0.5s ease' }}>
-        <WordCard word={word} size={180} />
-      </div>
       {bits.map((b) => (
         <span key={b.i} style={{
           position: 'absolute', left: '50%', top: '48%',
@@ -119,7 +110,7 @@ function CelMultiply({ playKey, word }) {
           animation: `paper-multiply 1.1s ease ${b.delay}ms forwards`,
           '--mx': `${b.x}px`, '--my': `${b.y}px`, '--mr': `${b.r}deg`,
           pointerEvents: 'none',
-        }}>{word.image}</span>
+        }}>{word.emoji}</span>
       ))}
     </div>
   )
@@ -130,7 +121,6 @@ function CelBalloons({ playKey, word }) {
   const phrases = ['Brawo!', 'Super!', 'Tak!', 'Świetnie!', 'Pięknie!']
   return (
     <div key={playKey} className="cel-root">
-      <WordCard word={word} size={180} />
       {phrases.map((p, i) => {
         const x = (i - 2) * 60 + (Math.random() - 0.5) * 16
         const delay = i * 90
@@ -156,7 +146,6 @@ function CelRainbow({ playKey, word }) {
   const arcs = [PALETTE.coral, PALETTE.mustard, PALETTE.mint, PALETTE.navy, PALETTE.rose]
   return (
     <div key={playKey} className="cel-root">
-      <WordCard word={word} size={180} />
       <svg viewBox="0 0 320 280" width="100%" height="100%"
            style={{ position: 'absolute', pointerEvents: 'none' }}>
         {arcs.map((c, i) => (
@@ -182,9 +171,6 @@ function CelRainbow({ playKey, word }) {
 function CelPlusOne({ playKey, word }) {
   return (
     <div key={playKey} className="cel-root">
-      <div style={{ animation: 'paper-bouncy 0.5s ease 0.4s' }}>
-        <WordCard word={word} size={180} />
-      </div>
       <div style={{ position: 'absolute', top: '16%', display: 'flex', gap: 12 }}>
         {[0,1,2].map((i) => (
           <span key={i} style={{
@@ -221,9 +207,6 @@ function CelFireworks({ playKey, word }) {
   ]
   return (
     <div key={playKey} className="cel-root">
-      <div style={{ animation: 'paper-bouncy 0.55s ease' }}>
-        <WordCard word={word} size={160} />
-      </div>
       {bursts.map((b, idx) => (
         <svg key={idx} viewBox="0 0 100 100" width="160" height="160"
              style={{ position: 'absolute', left: `${b.x}%`, top: `${b.y}%`,
