@@ -106,36 +106,69 @@ body {
   z-index: 3;
 }
 
-/* ---------- Learn-mode toggle ---------- */
-.learn-mode-paper {
-  position: absolute;
-  top: 78px;
-  right: 22px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--f-display);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink);
-  background: #fff;
-  border-radius: 10px;
-  padding: 4px 10px;
-  cursor: pointer;
-  user-select: none;
-  z-index: 3;
-  filter: drop-shadow(2px 3px 0 rgba(42,38,32,0.18));
-}
-.learn-mode-paper input[type='checkbox'] {
-  width: 16px; height: 16px; cursor: pointer; accent-color: var(--coral);
-}
-
-/* ---------- Mic ---------- */
-.mic-wrap {
+/* ---------- Mic cluster ---------- */
+.mic-cluster {
   position: absolute;
   bottom: 22px;
   right: 22px;
   z-index: 3;
+}
+
+/* ---------- Hint badge ---------- */
+.hint-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 54px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  user-select: none;
+  filter: drop-shadow(3px 4px 0 rgba(42,38,32,0.22));
+  transform: rotate(4deg);
+  transition: background 0.15s ease;
+}
+.hint-badge input[type='checkbox'] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.hint-badge--on {
+  background: var(--mint);
+}
+.hint-badge::after {
+  content: 'Podpowiedz';
+  position: absolute;
+  top: 50%;
+  right: 110%;
+  bottom: auto;
+  transform: translateY(-50%) rotate(-4deg);
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--f-display);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  filter: drop-shadow(2px 3px 0 rgba(42,38,32,0.18));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s ease;
+}
+.hint-badge:hover::after {
+  opacity: 1;
+}
+.mic-cluster .paper-mic {
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }
 .paper-mic:hover { transform: rotate(-3deg) translate(-1px,-1px) !important; }
 .paper-mic:active {
@@ -300,3 +333,23 @@ body {
 @media (max-width: 540px) {
   .game-shell { height: 100vh; border-radius: 0; }
 }
+
+/* ---------- Back button ---------- */
+.back-btn {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--f-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  opacity: 0.5;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: opacity 0.15s;
+  z-index: 10;
+}
+.back-btn:hover { opacity: 1; }

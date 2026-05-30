@@ -23,6 +23,7 @@ export function GameDisplay({
   learnMode = false,
   onLearnModeChange = () => {},
   onSpeak = () => {},
+  onBack = () => {},
 }) {
   const next = nextStageAt(score)
   return (
@@ -49,6 +50,11 @@ export function GameDisplay({
           {/* Word card */}
           <div className={`word-area status-${status}`}>
             <WordTransition word={word} size={250} />
+            {status === 'correct' && celebration && (
+              <div className="celebration-overlay">
+                <Celebration kind={celebration.kind} word={word} playKey={celebration.key} />
+              </div>
+            )}
           </div>
 
           {/* Footer area — next milestone hint */}
@@ -60,26 +66,23 @@ export function GameDisplay({
             )}
           </div>
 
-          {/* Controls — learn-mode (top-right above bubble) + mic (bottom-right) */}
-          <label className="learn-mode-paper">
-            <input
-              type="checkbox"
-              checked={learnMode}
-              onChange={(e) => onLearnModeChange(e.target.checked)}
-            />
-            Podpowiedz
-          </label>
-
-          <div className="mic-wrap">
+          {/* Controls — mic + hint badge cluster (bottom-right) */}
+          <div className="mic-cluster">
+            <label className={`hint-badge${learnMode ? ' hint-badge--on' : ''}`}>
+              <input
+                type="checkbox"
+                checked={learnMode}
+                onChange={(e) => onLearnModeChange(e.target.checked)}
+              />
+              🤫
+            </label>
             <MicButton onClick={onSpeak} />
           </div>
 
-          {/* Celebration overlay */}
-          {status === 'correct' && celebration && (
-            <div className="celebration-overlay">
-              <Celebration kind={celebration.kind} word={word} playKey={celebration.key} />
-            </div>
-          )}
+          <button className="back-btn" onClick={onBack} aria-label="Wróć do menu">
+            ← wróć
+          </button>
+
         </div>
       </div>
     </div>
