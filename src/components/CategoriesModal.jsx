@@ -2,7 +2,7 @@ export function CategoriesModal({ categories, selected, onClose, onChange }) {
   const allSelected = !selected || selected.length === 0
 
   function toggleAll() {
-    onChange(allSelected ? categories.map(c => c.id) : null)
+    onChange(null)
   }
 
   function toggleCategory(id) {

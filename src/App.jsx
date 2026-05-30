@@ -22,7 +22,11 @@ function pickDistractors(word, allWords, selectedCategories, count = 3) {
   const ids = selectedCategories && selectedCategories.length > 0
     ? selectedCategories : Object.keys(allWords)
   const pool = ids.flatMap(id => allWords[id] ?? []).filter(w => w.word !== word.word)
-  const shuffled = [...pool].sort(() => Math.random() - 0.5)
+  // If selected categories don't have enough distractors, pull from all categories
+  const fallback = pool.length < count
+    ? Object.keys(allWords).flatMap(id => allWords[id] ?? []).filter(w => w.word !== word.word)
+    : pool
+  const shuffled = [...fallback].sort(() => Math.random() - 0.5)
   return shuffled.slice(0, count)
 }
 
@@ -149,8 +153,9 @@ export default function App() {
   }
 
   function handlePlay() {
-    const deck = buildDeck(words, selectedCategories)
-    setWordState({ currentWord: deck[0], deck: deck.slice(1) })
+    const newDeck = buildDeck(words, selectedCategories)
+    if (newDeck.length === 0) return
+    setWordState({ currentWord: newDeck[0], deck: newDeck.slice(1) })
     setScore(0)
     setStatus('listening')
     setCelebration(null)
