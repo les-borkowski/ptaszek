@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { GameDisplay } from './components/GameDisplay'
+import { HearAndTouchDisplay } from './components/HearAndTouchDisplay'
 import { TitleScreen } from './components/TitleScreen'
 import { ScoresScreen } from './components/ScoresScreen'
 import { useSpeechRecognizer } from './hooks/useSpeechRecognizer'
@@ -16,6 +17,23 @@ import './App.css'
 const PRAISE_PHRASES = ['Brawo!', 'Super!', 'Świetnie!', 'Tak jest!', 'Wspaniale!', 'Pięknie!']
 
 function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)] }
+
+function pickDistractors(word, allWords, selectedCategories, count = 3) {
+  const ids = selectedCategories && selectedCategories.length > 0
+    ? selectedCategories : Object.keys(allWords)
+  const pool = ids.flatMap(id => allWords[id] ?? []).filter(w => w.word !== word.word)
+  const shuffled = [...pool].sort(() => Math.random() - 0.5)
+  return shuffled.slice(0, count)
+}
+
+function shuffleArray(arr) {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
 
 function loadScores() {
   try { return JSON.parse(localStorage.getItem('ptaszek_scores')) || [] } catch { return [] }
@@ -56,6 +74,7 @@ export default function App() {
   const [selectedCategories, setSelectedCategories] = useState(() => {
     try { return JSON.parse(localStorage.getItem('ptaszek_categories')) } catch { return null }
   })
+  const [hearOptions, setHearOptions] = useState([])
 
   const { transcript, error, start, stop, isListening } = useSpeechRecognizer()
   const { speak, isSpeaking } = useSpeechSynthesis()
@@ -63,6 +82,7 @@ export default function App() {
 
   // On each new word: speak (learn mode) or listen directly
   useEffect(() => {
+    if (mode === 'hear') return
     if (learnMode) {
       speak(currentWord.word)
     } else {
@@ -96,7 +116,7 @@ export default function App() {
       setTimeout(() => {
         setCelebration(null)
         setWordState(({ deck: d }) => {
-          const { word, remainingDeck } = getNextWord(d, words, null)
+          const { word, remainingDeck } = getNextWord(d, words, selectedCategories)
           return { currentWord: word, deck: remainingDeck }
         })
         setStatus('listening')
@@ -110,6 +130,13 @@ export default function App() {
       }, 1500)
     }
   }, [transcript]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (mode !== 'hear' || screen !== 'game') return
+    const distractors = pickDistractors(currentWord, words, selectedCategories)
+    setHearOptions(shuffleArray([currentWord, ...distractors]))
+    speak(currentWord.word)
+  }, [currentWord, mode, screen]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleLearnModeChange = (value) => {
     setLearnMode(value)
@@ -154,6 +181,34 @@ export default function App() {
     localStorage.setItem('ptaszek_categories', JSON.stringify(cats))
   }
 
+  function handleHearSelect(option) {
+    if (status !== 'listening') return
+    if (option.word === currentWord.word) {
+      const newScore = score + 1
+      const isMilestone = newScore % 5 === 0
+      const cel = isMilestone ? 'fireworks' : pickRandom(CELEBRATION_KINDS)
+      const phrase = isMilestone ? 'Wspaniale!' : pickRandom(PRAISE_PHRASES)
+      setScore(newScore)
+      setStatus('correct')
+      setCelebration({ kind: cel, key: Date.now() })
+      playSuccess()
+      speakPraise(phrase)
+      const delay = isMilestone ? 2400 : 1600
+      setTimeout(() => {
+        setCelebration(null)
+        setWordState(({ deck: d }) => {
+          const { word, remainingDeck } = getNextWord(d, words, selectedCategories)
+          return { currentWord: word, deck: remainingDeck }
+        })
+        setStatus('listening')
+      }, delay)
+    } else {
+      setStatus('incorrect')
+      playError()
+      setTimeout(() => setStatus('listening'), 1500)
+    }
+  }
+
   return (
     <div className="app">
       {error && (
@@ -175,7 +230,7 @@ export default function App() {
           onScores={() => setScreen('scores')}
         />
       )}
-      {screen === 'game' && (
+      {screen === 'game' && mode === 'say' && (
         <GameDisplay
           word={currentWord}
           score={score}
@@ -184,6 +239,17 @@ export default function App() {
           learnMode={learnMode}
           onLearnModeChange={handleLearnModeChange}
           onSpeak={handleSpeak}
+          onBack={handleBackToTitle}
+        />
+      )}
+      {screen === 'game' && mode === 'hear' && (
+        <HearAndTouchDisplay
+          word={currentWord}
+          options={hearOptions}
+          score={score}
+          status={status}
+          celebration={celebration}
+          onSelect={handleHearSelect}
           onBack={handleBackToTitle}
         />
       )}
