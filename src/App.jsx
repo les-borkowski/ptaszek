@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { GameDisplay } from './components/GameDisplay'
+import { TitleScreen } from './components/TitleScreen'
+import { ScoresScreen } from './components/ScoresScreen'
 import { useSpeechRecognizer } from './hooks/useSpeechRecognizer'
 import { useSpeechSynthesis } from './hooks/useSpeechSynthesis'
 import { fuzzyMatch } from './utils/fuzzyMatch'
@@ -8,11 +10,28 @@ import { buildDeck, getNextWord } from './utils/wordDeck'
 import { speakPraise } from './components/Paper'
 import { CELEBRATION_KINDS } from './components/Celebrations'
 import words from './data/words.json'
+import categories from './data/categories.json'
 import './App.css'
 
 const PRAISE_PHRASES = ['Brawo!', 'Super!', 'Świetnie!', 'Tak jest!', 'Wspaniale!', 'Pięknie!']
 
 function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)] }
+
+function loadScores() {
+  try { return JSON.parse(localStorage.getItem('ptaszek_scores')) || [] } catch { return [] }
+}
+function saveScore({ player, score, mode }) {
+  const entries = loadScores()
+  entries.push({ player, score, mode, date: new Date().toISOString() })
+  entries.sort((a, b) => b.score - a.score)
+  localStorage.setItem('ptaszek_scores', JSON.stringify(entries.slice(0, 50)))
+}
+function loadPlayers() {
+  try { return JSON.parse(localStorage.getItem('ptaszek_players')) || [] } catch { return [] }
+}
+function savePlayers(players) {
+  localStorage.setItem('ptaszek_players', JSON.stringify(players.slice(0, 8)))
+}
 
 export default function App() {
   const [wordState, setWordState] = useState(() => {
@@ -27,6 +46,16 @@ export default function App() {
   const [learnMode, setLearnMode] = useState(
     () => localStorage.getItem('learnMode') === 'true'
   )
+
+  const [screen, setScreen] = useState('title')
+  const [player, setPlayer] = useState(
+    () => localStorage.getItem('ptaszek_last_player') || 'Gracz'
+  )
+  const [players, setPlayers] = useState(() => loadPlayers())
+  const [mode, setMode] = useState('say')
+  const [selectedCategories, setSelectedCategories] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('ptaszek_categories')) } catch { return null }
+  })
 
   const { transcript, error, start, stop, isListening } = useSpeechRecognizer()
   const { speak, isSpeaking } = useSpeechSynthesis()
@@ -92,6 +121,39 @@ export default function App() {
     speak(currentWord.word)
   }
 
+  function handlePlay() {
+    const deck = buildDeck(words, selectedCategories)
+    setWordState({ currentWord: deck[0], deck: deck.slice(1) })
+    setScore(0)
+    setStatus('listening')
+    setCelebration(null)
+    setScreen('game')
+  }
+
+  function handleBackToTitle() {
+    if (score > 0) saveScore({ player, score, mode })
+    setScore(0)
+    setStatus('listening')
+    setCelebration(null)
+    setScreen('title')
+  }
+
+  function handlePlayerChange(name) {
+    const trimmed = name.trim()
+    if (!trimmed) return
+    setPlayer(trimmed)
+    localStorage.setItem('ptaszek_last_player', trimmed)
+    const prev = loadPlayers().filter(p => p !== trimmed)
+    const updated = [trimmed, ...prev]
+    savePlayers(updated)
+    setPlayers(updated)
+  }
+
+  function handleCategoriesChange(cats) {
+    setSelectedCategories(cats)
+    localStorage.setItem('ptaszek_categories', JSON.stringify(cats))
+  }
+
   return (
     <div className="app">
       {error && (
@@ -99,15 +161,39 @@ export default function App() {
           ⚠️ Mikrofon niedostępny: {error}. Otwórz w Chrome lub Edge i zezwól na mikrofon.
         </div>
       )}
-      <GameDisplay
-        word={currentWord}
-        score={score}
-        status={status}
-        celebration={celebration}
-        learnMode={learnMode}
-        onLearnModeChange={handleLearnModeChange}
-        onSpeak={handleSpeak}
-      />
+      {screen === 'title' && (
+        <TitleScreen
+          player={player}
+          players={players}
+          mode={mode}
+          selectedCategories={selectedCategories}
+          categories={categories}
+          onPlayerChange={handlePlayerChange}
+          onModeChange={setMode}
+          onCategoriesChange={handleCategoriesChange}
+          onPlay={handlePlay}
+          onScores={() => setScreen('scores')}
+        />
+      )}
+      {screen === 'game' && (
+        <GameDisplay
+          word={currentWord}
+          score={score}
+          status={status}
+          celebration={celebration}
+          learnMode={learnMode}
+          onLearnModeChange={handleLearnModeChange}
+          onSpeak={handleSpeak}
+          onBack={handleBackToTitle}
+        />
+      )}
+      {screen === 'scores' && (
+        <ScoresScreen
+          scores={loadScores()}
+          currentPlayer={player}
+          onBack={() => setScreen('title')}
+        />
+      )}
     </div>
   )
 }
