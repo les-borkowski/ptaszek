@@ -530,7 +530,6 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  text-align: right;
 }
 .hat-prompt {
   font-family: var(--f-display); font-size: 18px; font-weight: 700;

@@ -41,7 +41,7 @@ describe('HearAndTouchDisplay', () => {
   test('renders four emoji cards', () => {
     render(<HearAndTouchDisplay {...defaultProps} />)
     const cards = screen.getAllByRole('button').filter(b => b.classList.contains('hat-card'))
-    expect(cards.length).toBeGreaterThanOrEqual(4)
+    expect(cards).toHaveLength(4)
   })
 
   test('shows listening prompt when status is listening', () => {
