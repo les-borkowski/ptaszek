@@ -462,3 +462,24 @@ body {
   font-family: var(--f-display); font-size: 16px; font-weight: 700;
   cursor: pointer; filter: drop-shadow(3px 4px 0 rgba(42,38,32,0.20));
 }
+
+/* ---------- Player modal ---------- */
+.player-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.player-chip {
+  padding: 8px 16px; border-radius: 20px; border: none;
+  background: var(--cream); font-family: var(--f-display);
+  font-size: 14px; font-weight: 700; color: var(--ink); cursor: pointer;
+  filter: drop-shadow(2px 3px 0 rgba(42,38,32,0.12));
+}
+.player-chip--active { background: var(--coral); color: #fff; }
+.modal-divider {
+  text-align: center; font-family: var(--f-display);
+  font-size: 13px; color: var(--ink); opacity: 0.5;
+}
+.player-input {
+  width: 100%; padding: 12px 14px; border-radius: 14px;
+  border: 2px solid var(--kraft-2); background: var(--cream);
+  font-family: var(--f-display); font-size: 16px; font-weight: 600;
+  color: var(--ink); outline: none;
+}
+.player-input:focus { border-color: var(--coral); }
