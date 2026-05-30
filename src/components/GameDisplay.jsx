@@ -48,7 +48,7 @@ export function GameDisplay({
 
           {/* Word card */}
           <div className={`word-area status-${status}`}>
-            <WordTransition word={word} size={210} />
+            <WordTransition word={word} size={250} />
           </div>
 
           {/* Footer area — next milestone hint */}

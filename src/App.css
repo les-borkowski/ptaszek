@@ -15,8 +15,8 @@
   --rose:     #E8A7B4;
   --sky:      #BFD9E8;
 
-  --f-display: 'Fredoka', 'Patrick Hand', system-ui, sans-serif;
-  --f-marker:  'Patrick Hand', 'Fredoka', system-ui, sans-serif;
+  --f-display: 'Nunito', 'Patrick Hand', system-ui, sans-serif;
+  --f-marker:  'Patrick Hand', 'Nunito', system-ui, sans-serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -92,7 +92,7 @@ body {
   justify-content: center;
   align-items: center;
   margin-top: 22px;
-  min-height: 280px;
+  min-height: 330px;
   position: relative;
   z-index: 3;
 }
