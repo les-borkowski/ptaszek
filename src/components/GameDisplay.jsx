@@ -33,9 +33,14 @@ export function GameDisplay({
         <Scene score={score} />
 
         <div className="game-shell-inner">
-          {/* Header — paper chain + prompt */}
+          {/* Header — back nav + paper chain (left) + prompt bubble (right) */}
           <div className="game-header">
-            <PaperChain score={score} size="md" />
+            <div className="game-header-start">
+              <button className="back-btn" onClick={onBack} aria-label="Wróć do menu">
+                ← wróć
+              </button>
+              <PaperChain score={score} size="md" />
+            </div>
             {status === 'listening' && (
               <SpeechBubble>Powiedz słowo!</SpeechBubble>
             )}
@@ -78,10 +83,6 @@ export function GameDisplay({
             </label>
             <MicButton onClick={onSpeak} />
           </div>
-
-          <button className="back-btn" onClick={onBack} aria-label="Wróć do menu">
-            ← wróć
-          </button>
 
         </div>
       </div>

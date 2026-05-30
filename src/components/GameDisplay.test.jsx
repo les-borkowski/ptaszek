@@ -94,4 +94,13 @@ describe('GameDisplay (cut-paper)', () => {
     // next stage is at score 5
     expect(screen.getByText(/Następny etap za 3/i)).toBeInTheDocument()
   })
+
+  test('renders a back button that calls onBack when clicked', async () => {
+    const onBack = vi.fn()
+    render(<GameDisplay {...defaultProps} onBack={onBack} />)
+    const btn = screen.getByRole('button', { name: /Wróć do menu/i })
+    expect(btn).toBeInTheDocument()
+    await userEvent.click(btn)
+    expect(onBack).toHaveBeenCalledTimes(1)
+  })
 })
