@@ -1,34 +1,38 @@
-[
-  { "id": 1, "polish": "kwadrat", "english": "square", "image": "🟥", "category": "shapes" },
-  { "id": 2, "polish": "koło", "english": "circle", "image": "🔵", "category": "shapes" },
-  { "id": 3, "polish": "trójkąt", "english": "triangle", "image": "🔺", "category": "shapes" },
-  { "id": 4, "polish": "prostokąt", "english": "rectangle", "image": "▭", "category": "shapes" },
-  { "id": 5, "polish": "diament", "english": "diamond", "image": "💎", "category": "shapes" },
-  { "id": 6, "polish": "gwiazda", "english": "star", "image": "⭐", "category": "shapes" },
-  { "id": 7, "polish": "serce", "english": "heart", "image": "❤️", "category": "shapes" },
-  { "id": 8, "polish": "krzyż", "english": "cross", "image": "✝️", "category": "shapes" },
-  { "id": 9, "polish": "strzałka", "english": "arrow", "image": "➡️", "category": "shapes" },
-  { "id": 10, "polish": "półkole", "english": "semicircle", "image": "🌙", "category": "shapes" },
-
-  { "id": 11, "polish": "czerwony", "english": "red", "image": "🔴", "category": "colours" },
-  { "id": 12, "polish": "niebieski", "english": "blue", "image": "🔵", "category": "colours" },
-  { "id": 13, "polish": "żółty", "english": "yellow", "image": "🟨", "category": "colours" },
-  { "id": 14, "polish": "zielony", "english": "green", "image": "🟢", "category": "colours" },
-  { "id": 15, "polish": "pomarańczowy", "english": "orange", "image": "🟠", "category": "colours" },
-  { "id": 16, "polish": "purpurowy", "english": "purple", "image": "🟣", "category": "colours" },
-  { "id": 17, "polish": "różowy", "english": "pink", "image": "🌸", "category": "colours" },
-  { "id": 18, "polish": "czarny", "english": "black", "image": "⚫", "category": "colours" },
-  { "id": 19, "polish": "biały", "english": "white", "image": "⚪", "category": "colours" },
-  { "id": 20, "polish": "szary", "english": "gray", "image": "🩶", "category": "colours" },
-
-  { "id": 21, "polish": "pies", "english": "dog", "image": "🐶", "category": "domestic_animals" },
-  { "id": 22, "polish": "kot", "english": "cat", "image": "🐱", "category": "domestic_animals" },
-  { "id": 23, "polish": "koń", "english": "horse", "image": "🐴", "category": "domestic_animals" },
-  { "id": 24, "polish": "krowa", "english": "cow", "image": "🐄", "category": "domestic_animals" },
-  { "id": 25, "polish": "świnia", "english": "pig", "image": "🐷", "category": "domestic_animals" },
-  { "id": 26, "polish": "kura", "english": "chicken", "image": "🐔", "category": "domestic_animals" },
-  { "id": 27, "polish": "kaczka", "english": "duck", "image": "🦆", "category": "domestic_animals" },
-  { "id": 28, "polish": "koza", "english": "goat", "image": "🐐", "category": "domestic_animals" },
-  { "id": 29, "polish": "owca", "english": "sheep", "image": "🐑", "category": "domestic_animals" },
-  { "id": 30, "polish": "królik", "english": "rabbit", "image": "🐰", "category": "domestic_animals" }
-]
+{
+  "shapes": [
+    { "word": "kwadrat",   "emoji": "🟥" },
+    { "word": "koło",      "emoji": "🔵" },
+    { "word": "trójkąt",   "emoji": "🔺" },
+    { "word": "prostokąt", "emoji": "▭"  },
+    { "word": "diament",   "emoji": "💎" },
+    { "word": "gwiazda",   "emoji": "⭐" },
+    { "word": "serce",     "emoji": "❤️" },
+    { "word": "krzyż",     "emoji": "✝️" },
+    { "word": "strzałka",  "emoji": "➡️" },
+    { "word": "półkole",   "emoji": "🌙" }
+  ],
+  "colours": [
+    { "word": "czerwony",     "emoji": "🔴" },
+    { "word": "niebieski",    "emoji": "🔵" },
+    { "word": "żółty",        "emoji": "🟨" },
+    { "word": "zielony",      "emoji": "🟢" },
+    { "word": "pomarańczowy", "emoji": "🟠" },
+    { "word": "purpurowy",    "emoji": "🟣" },
+    { "word": "różowy",       "emoji": "🌸" },
+    { "word": "czarny",       "emoji": "⚫" },
+    { "word": "biały",        "emoji": "⚪" },
+    { "word": "szary",        "emoji": "🩶" }
+  ],
+  "domestic_animals": [
+    { "word": "pies",   "emoji": "🐶" },
+    { "word": "kot",    "emoji": "🐱" },
+    { "word": "koń",    "emoji": "🐴" },
+    { "word": "krowa",  "emoji": "🐄" },
+    { "word": "świnia", "emoji": "🐷" },
+    { "word": "kura",   "emoji": "🐔" },
+    { "word": "kaczka", "emoji": "🦆" },
+    { "word": "koza",   "emoji": "🐐" },
+    { "word": "owca",   "emoji": "🐑" },
+    { "word": "królik", "emoji": "🐰" }
+  ]
+}

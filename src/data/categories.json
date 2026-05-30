@@ -1,0 +1,5 @@
+[
+  { "id": "shapes",           "label": "Kształty",        "emoji": "◼" },
+  { "id": "colours",          "label": "Kolory",           "emoji": "🔴" },
+  { "id": "domestic_animals", "label": "Zwierzęta domowe", "emoji": "🐘" }
+]
