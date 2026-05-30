@@ -9,7 +9,7 @@ describe('useSpeechSynthesis', () => {
   beforeEach(() => {
     mockUtterance = { lang: '', onstart: null, onend: null, onerror: null }
     vi.stubGlobal('SpeechSynthesisUtterance', vi.fn(() => mockUtterance))
-    mockSynth = { cancel: vi.fn(), speak: vi.fn() }
+    mockSynth = { cancel: vi.fn(), speak: vi.fn(), resume: vi.fn() }
     vi.stubGlobal('speechSynthesis', mockSynth)
   })
 

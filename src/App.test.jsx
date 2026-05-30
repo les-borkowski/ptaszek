@@ -50,17 +50,17 @@ describe('App (cut-paper)', () => {
     expect(screen.getByText(/Powiedz słowo/i)).toBeInTheDocument()
   })
 
-  test('calls start() on mount (learnMode off)', () => {
+  test('does not call start() on title screen (game not yet started)', () => {
     const mockStart = vi.fn()
     useSpeechRecognizer.mockReturnValue({
       isListening: false, transcript: '', error: null,
       start: mockStart, stop: vi.fn(),
     })
     render(<App />)
-    expect(mockStart).toHaveBeenCalledTimes(1)
+    expect(mockStart).not.toHaveBeenCalled()
   })
 
-  test('calls speak() on mount when learnMode is true', () => {
+  test('does not call speak() on title screen even when learnMode is true', () => {
     localStorage.setItem('learnMode', 'true')
     const mockSpeak = vi.fn()
     const mockStart = vi.fn()
@@ -70,7 +70,7 @@ describe('App (cut-paper)', () => {
       start: mockStart, stop: vi.fn(),
     })
     render(<App />)
-    expect(mockSpeak).toHaveBeenCalledTimes(1)
+    expect(mockSpeak).not.toHaveBeenCalled()
     expect(mockStart).not.toHaveBeenCalled()
   })
 

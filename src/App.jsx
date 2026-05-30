@@ -84,19 +84,19 @@ export default function App() {
   const { speak, isSpeaking } = useSpeechSynthesis()
   const prevIsSpeakingRef = useRef(false)
 
-  // On each new word: speak (learn mode) or listen directly
+  // On each new word while game is active: speak (learn mode) or listen directly
   useEffect(() => {
-    if (mode === 'hear') return
+    if (screen !== 'game' || mode === 'hear') return
     if (learnMode) {
       speak(currentWord.word)
     } else {
       start()
     }
-  }, [currentWord]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentWord, screen]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // After TTS finishes (true→false), start listening
+  // After TTS finishes (true→false), start listening — but not in hear mode
   useEffect(() => {
-    if (prevIsSpeakingRef.current && !isSpeaking) {
+    if (prevIsSpeakingRef.current && !isSpeaking && mode !== 'hear') {
       start()
     }
     prevIsSpeakingRef.current = isSpeaking

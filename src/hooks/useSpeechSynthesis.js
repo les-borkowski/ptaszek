@@ -5,6 +5,7 @@ export function useSpeechSynthesis() {
 
   const speak = useCallback((text, lang = 'pl-PL') => {
     if (!window.speechSynthesis) return
+    window.speechSynthesis.resume()   // unpause Chrome if suspended
     window.speechSynthesis.cancel()
     let utterance
     try {
