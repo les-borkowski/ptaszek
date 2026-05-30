@@ -3,12 +3,12 @@ import userEvent from '@testing-library/user-event'
 import { describe, test, expect, vi } from 'vitest'
 import { HearAndTouchDisplay } from './HearAndTouchDisplay'
 
-const mockWord   = { word: 'pies', emoji: '🐶' }
+const mockWord = { word: 'pies', emoji: '🐶' }
 const mockOptions = [
-  { word: 'pies',  emoji: '🐶' },
-  { word: 'kot',   emoji: '🐱' },
-  { word: 'ryba',  emoji: '🐟' },
-  { word: 'ptak',  emoji: '🐦' },
+  { word: 'pies', emoji: '🐶' },
+  { word: 'kot',  emoji: '🐱' },
+  { word: 'ryba', emoji: '🐟' },
+  { word: 'ptak', emoji: '🐦' },
 ]
 const defaultProps = {
   word: mockWord,
@@ -18,17 +18,33 @@ const defaultProps = {
   celebration: null,
   onSelect: () => {},
   onBack: () => {},
+  onSpeak: () => {},
 }
 
 describe('HearAndTouchDisplay', () => {
-  test('renders the mode title', () => {
+  test('renders the mode title in a SpeechBubble when listening', () => {
     render(<HearAndTouchDisplay {...defaultProps} />)
     expect(screen.getByText(/Usłysz i dotknij/i)).toBeInTheDocument()
+  })
+
+  test('shows Brawo in SpeechBubble when status is correct', () => {
+    render(<HearAndTouchDisplay {...defaultProps} status="correct" />)
+    expect(screen.getByText(/Brawo!/i)).toBeInTheDocument()
+  })
+
+  test('shows retry message in SpeechBubble when status is incorrect', () => {
+    render(<HearAndTouchDisplay {...defaultProps} status="incorrect" />)
+    expect(screen.getByText(/Spróbuj jeszcze raz/i)).toBeInTheDocument()
   })
 
   test('renders PaperChain score progress', () => {
     render(<HearAndTouchDisplay {...defaultProps} score={5} />)
     expect(screen.getByText(/POSTĘP/i)).toBeInTheDocument()
+  })
+
+  test('renders next-milestone hint when below a milestone', () => {
+    render(<HearAndTouchDisplay {...defaultProps} score={2} />)
+    expect(screen.getByText(/Następny etap za 3/i)).toBeInTheDocument()
   })
 
   test('renders a back button that calls onBack', async () => {
@@ -38,15 +54,17 @@ describe('HearAndTouchDisplay', () => {
     expect(onBack).toHaveBeenCalledTimes(1)
   })
 
+  test('renders a speaker button that calls onSpeak', async () => {
+    const onSpeak = vi.fn()
+    render(<HearAndTouchDisplay {...defaultProps} onSpeak={onSpeak} />)
+    await userEvent.click(screen.getByRole('button', { name: /Posłuchaj słowa/i }))
+    expect(onSpeak).toHaveBeenCalledTimes(1)
+  })
+
   test('renders four emoji cards', () => {
     render(<HearAndTouchDisplay {...defaultProps} />)
     const cards = screen.getAllByRole('button').filter(b => b.classList.contains('hat-card'))
     expect(cards).toHaveLength(4)
-  })
-
-  test('shows listening prompt when status is listening', () => {
-    render(<HearAndTouchDisplay {...defaultProps} status="listening" />)
-    expect(screen.getByText(/Dotknij właściwy obrazek/i)).toBeInTheDocument()
   })
 
   test('calls onSelect when a card is clicked', async () => {

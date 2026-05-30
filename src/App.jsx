@@ -256,6 +256,7 @@ export default function App() {
           celebration={celebration}
           onSelect={handleHearSelect}
           onBack={handleBackToTitle}
+          onSpeak={handleSpeak}
         />
       )}
       {screen === 'scores' && (
