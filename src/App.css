@@ -353,3 +353,75 @@ body {
   z-index: 10;
 }
 .back-btn:hover { opacity: 1; }
+
+/* ---------- Title screen ---------- */
+.title-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: center;
+  padding: 32px 28px;
+}
+.title-logo { text-align: center; margin-bottom: 8px; }
+.title-bird {
+  font-size: 64px;
+  display: block;
+  filter: drop-shadow(4px 6px 0 rgba(42,38,32,0.22));
+  transform: rotate(-8deg);
+  margin-bottom: 4px;
+}
+.title-name {
+  font-family: var(--f-display);
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--navy);
+  line-height: 1;
+  filter: drop-shadow(3px 4px 0 rgba(42,38,32,0.18));
+}
+.title-tagline {
+  font-family: var(--f-marker);
+  font-size: 16px;
+  color: var(--ink);
+  opacity: 0.6;
+  margin-top: 4px;
+}
+.change-link {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--f-display); font-size: 13px; font-weight: 600;
+  color: var(--coral); padding: 4px 8px; border-radius: 8px;
+}
+.mode-toggle { display: flex; gap: 10px; }
+.mode-chip {
+  flex: 1; padding: 12px 8px; border-radius: 24px;
+  border: none; background: var(--cream);
+  font-family: var(--f-display); font-size: 14px; font-weight: 700;
+  color: var(--ink); cursor: pointer;
+  filter: drop-shadow(3px 4px 0 rgba(42,38,32,0.15));
+  transition: background 0.15s, filter 0.15s;
+}
+.mode-chip--active {
+  background: var(--coral); color: #fff;
+  filter: drop-shadow(3px 5px 0 rgba(42,38,32,0.22));
+}
+.categories-btn {
+  width: 100%; padding: 14px 18px; border-radius: 24px; border: none;
+  background: var(--cream); font-family: var(--f-display); font-size: 15px;
+  font-weight: 700; color: var(--ink); cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+  filter: drop-shadow(3px 4px 0 rgba(42,38,32,0.15));
+}
+.cat-summary { font-size: 13px; font-weight: 600; opacity: 0.65; }
+.play-btn {
+  width: 100%; padding: 18px; border-radius: 24px; border: none;
+  background: var(--coral); color: #fff;
+  font-family: var(--f-display); font-size: 22px; font-weight: 800;
+  cursor: pointer; filter: drop-shadow(4px 6px 0 rgba(42,38,32,0.22));
+  transition: filter 0.1s, transform 0.1s;
+}
+.play-btn:active { transform: translateY(2px); filter: drop-shadow(2px 3px 0 rgba(42,38,32,0.22)); }
+.scores-btn {
+  width: 100%; padding: 13px; border-radius: 24px; border: none;
+  background: var(--cream); color: var(--ink);
+  font-family: var(--f-display); font-size: 15px; font-weight: 700;
+  cursor: pointer; filter: drop-shadow(3px 4px 0 rgba(42,38,32,0.15));
+}
