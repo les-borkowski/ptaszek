@@ -32,6 +32,7 @@ export function speakPraise(text) {
     u.lang = 'pl-PL'
     u.rate = 1.05
     u.pitch = 1.2
+    window.speechSynthesis.resume()
     window.speechSynthesis.cancel()
     window.speechSynthesis.speak(u)
   } catch (_) { /* ignore */ }
