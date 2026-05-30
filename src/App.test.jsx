@@ -40,9 +40,9 @@ describe('App (cut-paper)', () => {
     expect(container.querySelector('.game-kraft')).toBeInTheDocument()
   })
 
-  test('renders the POSTĘP heading on first render', () => {
+  test('renders the title screen on first render', () => {
     render(<App />)
-    expect(screen.getByText(/POSTĘP/)).toBeInTheDocument()
+    expect(screen.getByText('Ptaszek')).toBeInTheDocument()
   })
 
   test('shows the listening prompt bubble on first render', () => {
@@ -74,13 +74,13 @@ describe('App (cut-paper)', () => {
     expect(mockStart).not.toHaveBeenCalled()
   })
 
-  test('renders the Podpowiedz toggle', () => {
+  test('renders mode toggle on title screen', () => {
     render(<App />)
-    expect(screen.getByLabelText(/Podpowiedz/i)).toBeInTheDocument()
+    expect(screen.getByText(/Powiedz słowo/i)).toBeInTheDocument()
   })
 
-  test('renders the mic button', () => {
+  test('renders the play button on title screen', () => {
     render(<App />)
-    expect(screen.getByRole('button', { name: /Wymów słowo/i })).toBeInTheDocument()
+    expect(screen.getByText(/Graj/i)).toBeInTheDocument()
   })
 })

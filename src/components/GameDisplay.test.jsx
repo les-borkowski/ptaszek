@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, test, expect, vi } from 'vitest'
 import { GameDisplay } from './GameDisplay'
 
-const mockWord = { id: 1, polish: 'kwadrat', english: 'square', image: '🟥' }
+const mockWord = { word: 'kwadrat', emoji: '🟥' }
 
 const defaultProps = {
   word: mockWord,
@@ -69,18 +69,18 @@ describe('GameDisplay (cut-paper)', () => {
     expect(onSpeak).toHaveBeenCalledTimes(1)
   })
 
-  test('renders Podpowiedz learn-mode toggle reflecting prop value', () => {
+  test('renders learn-mode toggle reflecting prop value', () => {
     const { rerender } = render(<GameDisplay {...defaultProps} learnMode={false} />)
-    expect(screen.getByLabelText(/Podpowiedz/i)).not.toBeChecked()
+    expect(screen.getByRole('checkbox')).not.toBeChecked()
 
     rerender(<GameDisplay {...defaultProps} learnMode={true} />)
-    expect(screen.getByLabelText(/Podpowiedz/i)).toBeChecked()
+    expect(screen.getByRole('checkbox')).toBeChecked()
   })
 
   test('calls onLearnModeChange(true) when unchecked toggle is clicked', async () => {
     const onChange = vi.fn()
     render(<GameDisplay {...defaultProps} learnMode={false} onLearnModeChange={onChange} />)
-    await userEvent.click(screen.getByLabelText(/Podpowiedz/i))
+    await userEvent.click(screen.getByRole('checkbox'))
     expect(onChange).toHaveBeenCalledWith(true)
   })
 

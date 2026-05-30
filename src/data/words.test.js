@@ -1,29 +1,33 @@
 import words from './words.json'
 
 describe('words.json', () => {
-  test('contains at least 5 entries', () => {
-    expect(words.length).toBeGreaterThanOrEqual(5)
+  test('has category keys', () => {
+    expect(words).toHaveProperty('shapes')
+    expect(words).toHaveProperty('colours')
+    expect(words).toHaveProperty('domestic_animals')
   })
 
-  test('every entry has required fields: id, polish, english, image', () => {
-    words.forEach((word) => {
-      expect(word).toHaveProperty('id')
-      expect(word).toHaveProperty('polish')
-      expect(word).toHaveProperty('english')
-      expect(word).toHaveProperty('image')
+  test('each category has at least 5 entries', () => {
+    Object.values(words).forEach(entries => {
+      expect(entries.length).toBeGreaterThanOrEqual(5)
     })
   })
 
-  test('all ids are unique', () => {
-    const ids = words.map((w) => w.id)
-    const uniqueIds = new Set(ids)
-    expect(uniqueIds.size).toBe(words.length)
+  test('every entry has required fields: word, emoji', () => {
+    Object.values(words).forEach(entries => {
+      entries.forEach(entry => {
+        expect(entry).toHaveProperty('word')
+        expect(entry).toHaveProperty('emoji')
+      })
+    })
   })
 
-  test('all polish fields are non-empty strings', () => {
-    words.forEach((word) => {
-      expect(typeof word.polish).toBe('string')
-      expect(word.polish.length).toBeGreaterThan(0)
+  test('all word fields are non-empty strings', () => {
+    Object.values(words).forEach(entries => {
+      entries.forEach(entry => {
+        expect(typeof entry.word).toBe('string')
+        expect(entry.word.length).toBeGreaterThan(0)
+      })
     })
   })
 })
