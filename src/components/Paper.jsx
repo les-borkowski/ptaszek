@@ -25,19 +25,9 @@ export const PRAISE_COLORS = [
 ]
 
 /* ---------- Polish voice praise ---------- */
-let _praiseUtterance = null  // prevent Chrome GC from dropping before events fire
 export function speakPraise(text) {
-  try {
-    if (!window.speechSynthesis) return
-    const u = new SpeechSynthesisUtterance(text)
-    u.lang = 'pl-PL'
-    u.rate = 1.05
-    u.pitch = 1.2
-    window.speechSynthesis.resume()
-    window.speechSynthesis.cancel()
-    _praiseUtterance = u
-    window.speechSynthesis.speak(u)
-  } catch (_) { /* ignore */ }
+  const audio = new Audio(`/audio/praise/${encodeURIComponent(text)}.mp3`)
+  audio.play().catch(() => {})
 }
 
 /* ---------- Deterministic PRNG ---------- */
