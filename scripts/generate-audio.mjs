@@ -18,7 +18,7 @@ const AUDIO_CONFIG = { audioEncoding: 'MP3' }
 
 async function synthesize(text, voice) {
   const res = await fetch(
-    `https://texttosynthesis.googleapis.com/v1/text:synthesize?key=${API_KEY}`,
+    `https://texttospeech.googleapis.com/v1/text:synthesize?key=${API_KEY}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -51,7 +51,7 @@ mkdirSync(wordsDir, { recursive: true })
 
 console.log(`\nGenerating ${allWords.length} word files…`)
 for (const word of allWords) {
-  await generateFile(resolve(wordsDir, `${word}.mp3`), word, WORD_VOICE)
+  await generateFile(resolve(wordsDir, `${encodeURIComponent(word)}.mp3`), word, WORD_VOICE)
 }
 
 // Praise phrases — must match PRAISE_PHRASES in src/App.jsx
@@ -61,7 +61,7 @@ mkdirSync(praiseDir, { recursive: true })
 
 console.log(`\nGenerating ${PRAISE_PHRASES.length} praise files…`)
 for (const phrase of PRAISE_PHRASES) {
-  await generateFile(resolve(praiseDir, `${phrase}.mp3`), phrase, PRAISE_VOICE)
+  await generateFile(resolve(praiseDir, `${encodeURIComponent(phrase)}.mp3`), phrase, PRAISE_VOICE)
 }
 
 console.log('\nDone.')
