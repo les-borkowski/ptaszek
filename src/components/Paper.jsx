@@ -25,6 +25,7 @@ export const PRAISE_COLORS = [
 ]
 
 /* ---------- Polish voice praise ---------- */
+let _praiseUtterance = null  // prevent Chrome GC from dropping before events fire
 export function speakPraise(text) {
   try {
     if (!window.speechSynthesis) return
@@ -34,6 +35,7 @@ export function speakPraise(text) {
     u.pitch = 1.2
     window.speechSynthesis.resume()
     window.speechSynthesis.cancel()
+    _praiseUtterance = u
     window.speechSynthesis.speak(u)
   } catch (_) { /* ignore */ }
 }

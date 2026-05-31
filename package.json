@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "generate:audio": "node scripts/generate-audio.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
