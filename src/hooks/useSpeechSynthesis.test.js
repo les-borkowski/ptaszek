@@ -1,20 +1,19 @@
 import { renderHook, act } from '@testing-library/react'
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { useSpeechSynthesis } from './useSpeechSynthesis'
+import { playAudio } from '../utils/audioPlayer'
+
+vi.mock('../utils/audioPlayer', () => ({ playAudio: vi.fn() }))
 
 describe('useSpeechSynthesis', () => {
-  let mockUtterance
-  let mockSynth
+  let resolveAudio
 
   beforeEach(() => {
-    mockUtterance = { lang: '', onstart: null, onend: null, onerror: null }
-    vi.stubGlobal('SpeechSynthesisUtterance', vi.fn(function() { return mockUtterance }))
-    mockSynth = { cancel: vi.fn(), speak: vi.fn(), resume: vi.fn() }
-    vi.stubGlobal('speechSynthesis', mockSynth)
+    playAudio.mockReturnValue(new Promise(r => { resolveAudio = r }))
   })
 
   afterEach(() => {
-    vi.unstubAllGlobals()
+    vi.clearAllMocks()
   })
 
   it('starts with isSpeaking false', () => {
@@ -22,45 +21,33 @@ describe('useSpeechSynthesis', () => {
     expect(result.current.isSpeaking).toBe(false)
   })
 
-  it('cancels existing speech and speaks the utterance', () => {
+  it('calls playAudio with the encoded word path', () => {
     const { result } = renderHook(() => useSpeechSynthesis())
     act(() => { result.current.speak('pies') })
-    expect(mockSynth.cancel).toHaveBeenCalled()
-    expect(mockSynth.speak).toHaveBeenCalledWith(mockUtterance)
-    expect(mockUtterance.lang).toBe('pl-PL')
+    expect(playAudio).toHaveBeenCalledWith('/audio/words/pies.mp3')
   })
 
-  it('accepts a custom lang', () => {
+  it('encodes Polish characters in the word path', () => {
     const { result } = renderHook(() => useSpeechSynthesis())
-    act(() => { result.current.speak('dog', 'en-US') })
-    expect(mockUtterance.lang).toBe('en-US')
+    act(() => { result.current.speak('słoń') })
+    expect(playAudio).toHaveBeenCalledWith(`/audio/words/${encodeURIComponent('słoń')}.mp3`)
   })
 
-  it('sets isSpeaking true on utterance onstart', () => {
+  it('sets isSpeaking true immediately when speak is called', () => {
     const { result } = renderHook(() => useSpeechSynthesis())
     act(() => { result.current.speak('pies') })
-    act(() => { mockUtterance.onstart() })
     expect(result.current.isSpeaking).toBe(true)
   })
 
-  it('sets isSpeaking false on utterance onend', () => {
+  it('sets isSpeaking false when audio finishes', async () => {
     const { result } = renderHook(() => useSpeechSynthesis())
     act(() => { result.current.speak('pies') })
-    act(() => { mockUtterance.onstart() })
-    act(() => { mockUtterance.onend() })
+    await act(async () => { resolveAudio() })
     expect(result.current.isSpeaking).toBe(false)
   })
 
-  it('sets isSpeaking false on utterance onerror', () => {
-    const { result } = renderHook(() => useSpeechSynthesis())
-    act(() => { result.current.speak('pies') })
-    act(() => { mockUtterance.onstart() })
-    act(() => { mockUtterance.onerror() })
-    expect(result.current.isSpeaking).toBe(false)
-  })
-
-  it('does nothing if speechSynthesis is unavailable', () => {
-    vi.stubGlobal('speechSynthesis', undefined)
+  it('does not throw if speak is called with no prior setup', () => {
+    playAudio.mockResolvedValue(undefined)
     const { result } = renderHook(() => useSpeechSynthesis())
     expect(() => act(() => { result.current.speak('pies') })).not.toThrow()
   })
