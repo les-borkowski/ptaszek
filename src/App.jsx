@@ -26,8 +26,7 @@ function pickDistractors(word, allWords, selectedCategories, count = 3) {
   const fallback = pool.length < count
     ? Object.keys(allWords).flatMap(id => allWords[id] ?? []).filter(w => w.word !== word.word)
     : pool
-  const shuffled = [...fallback].sort(() => Math.random() - 0.5)
-  return shuffled.slice(0, count)
+  return shuffleArray(fallback).slice(0, count)
 }
 
 function shuffleArray(arr) {
@@ -83,10 +82,12 @@ export default function App() {
   const { transcript, error, start, stop, isListening } = useSpeechRecognizer()
   const { speak, isSpeaking } = useSpeechSynthesis()
   const prevIsSpeakingRef = useRef(false)
+  const lastProcessedTranscript = useRef('')
 
   // On each new word while game is active: speak (learn mode) or listen directly
   useEffect(() => {
     if (screen !== 'game' || mode === 'hear') return
+    lastProcessedTranscript.current = ''
     if (learnMode) {
       speak(currentWord.word)
     } else {
@@ -105,6 +106,8 @@ export default function App() {
   // React to speech recognition results
   useEffect(() => {
     if (!transcript || status !== 'listening') return
+    if (transcript === lastProcessedTranscript.current) return
+    lastProcessedTranscript.current = transcript
 
     if (fuzzyMatch(transcript, currentWord.word)) {
       const newScore = score + 1
