@@ -1,6 +1,3 @@
-/**
- * Plays a rising two-tone beep to signal a correct answer.
- */
 export function playSuccess() {
   const ctx = new AudioContext()
   const oscillator = ctx.createOscillator()
@@ -18,11 +15,13 @@ export function playSuccess() {
 
   oscillator.start(ctx.currentTime)
   oscillator.stop(ctx.currentTime + 0.4)
+  oscillator.onended = () => {
+    oscillator.disconnect()
+    gain.disconnect()
+    ctx.close()
+  }
 }
 
-/**
- * Plays a falling low beep to signal a wrong answer.
- */
 export function playError() {
   const ctx = new AudioContext()
   const oscillator = ctx.createOscillator()
@@ -40,4 +39,9 @@ export function playError() {
 
   oscillator.start(ctx.currentTime)
   oscillator.stop(ctx.currentTime + 0.4)
+  oscillator.onended = () => {
+    oscillator.disconnect()
+    gain.disconnect()
+    ctx.close()
+  }
 }

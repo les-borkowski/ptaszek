@@ -9,5 +9,6 @@
  *   "Tak jest!"  → "Tak_20jest_21"
  */
 export function wordToFilename(text) {
-  return encodeURIComponent(text).replace(/%/g, '_')
+  if (!text || !text.trim()) return ''
+  return encodeURIComponent(text.trim()).replace(/%/g, '_')
 }

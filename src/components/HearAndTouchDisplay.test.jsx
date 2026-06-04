@@ -77,11 +77,12 @@ describe('HearAndTouchDisplay', () => {
     expect(cards).toHaveLength(4)
   })
 
-  test('calls onSelect when a card is clicked', async () => {
+  test('calls onSelect with the correct option object when a card is clicked', async () => {
     const onSelect = vi.fn()
     render(<HearAndTouchDisplay {...defaultProps} onSelect={onSelect} />)
     const cards = screen.getAllByRole('button').filter(b => b.classList.contains('hat-card'))
     await userEvent.click(cards[0])
     expect(onSelect).toHaveBeenCalledTimes(1)
+    expect(onSelect).toHaveBeenCalledWith(mockOptions[0])
   })
 })

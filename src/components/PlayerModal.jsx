@@ -4,7 +4,8 @@ export function PlayerModal({ players, current, onClose, onSelect }) {
   const [input, setInput] = useState('')
 
   function handleSubmit() {
-    const name = input.trim() || current
+    const name = input.trim()
+    if (!name) return
     onSelect(name)
   }
 

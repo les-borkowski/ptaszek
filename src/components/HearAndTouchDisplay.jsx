@@ -38,6 +38,7 @@ export function HearAndTouchDisplay({
                 className="hat-card"
                 onClick={() => onSelect(opt)}
                 disabled={status !== 'listening'}
+                aria-label={opt.word}
               >
                 <span className="hat-emoji">{opt.emoji}</span>
               </button>
