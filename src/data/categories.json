@@ -1,5 +1,21 @@
 [
-  { "id": "shapes",           "label": "Kształty",        "emoji": "◼" },
-  { "id": "colours",          "label": "Kolory",           "emoji": "🔴" },
-  { "id": "domestic_animals", "label": "Zwierzęta domowe", "emoji": "🐘" }
+  { "id": "greetings",          "label": "Powitania",            "emoji": "👋" },
+  { "id": "numbers",            "label": "Liczby",               "emoji": "🔢" },
+  { "id": "colours",            "label": "Kolory",               "emoji": "🎨" },
+  { "id": "shapes",             "label": "Kształty",             "emoji": "◼" },
+  { "id": "days_of_week",       "label": "Dni tygodnia",         "emoji": "📅" },
+  { "id": "months",             "label": "Miesiące",             "emoji": "🗓️" },
+  { "id": "family",             "label": "Rodzina",              "emoji": "👨‍👩‍👧" },
+  { "id": "basic_needs",        "label": "Podstawowe potrzeby",  "emoji": "🍽️" },
+  { "id": "food_and_drink",     "label": "Jedzenie i picie",     "emoji": "🍔" },
+  { "id": "places",             "label": "Miejsca",              "emoji": "🏠" },
+  { "id": "transport",          "label": "Transport",            "emoji": "🚗" },
+  { "id": "common_verbs",       "label": "Czasowniki",           "emoji": "🏃" },
+  { "id": "common_adjectives",  "label": "Przymiotniki",         "emoji": "⭐" },
+  { "id": "time_expressions",   "label": "Czas",                 "emoji": "⏰" },
+  { "id": "weather",            "label": "Pogoda",               "emoji": "☀️" },
+  { "id": "domestic_animals",   "label": "Zwierzęta domowe",     "emoji": "🐾" },
+  { "id": "body_parts",         "label": "Części ciała",         "emoji": "🖐️" },
+  { "id": "clothing",           "label": "Ubrania",              "emoji": "👔" },
+  { "id": "useful_phrases",     "label": "Przydatne zwroty",     "emoji": "💬" }
 ]

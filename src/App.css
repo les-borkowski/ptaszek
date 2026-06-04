@@ -444,6 +444,11 @@ body {
   width: calc(100% - 48px); display: flex; flex-direction: column; gap: 10px;
   filter: drop-shadow(0 8px 16px rgba(42,38,32,0.28));
 }
+.cat-scroll {
+  display: flex; flex-direction: column; gap: 10px;
+  overflow-y: auto; max-height: 52vh;
+  padding-right: 4px;
+}
 .modal-header {
   display: flex; justify-content: space-between; align-items: center;
   font-family: var(--f-display); color: var(--ink); margin-bottom: 4px;
@@ -462,6 +467,9 @@ body {
 }
 .cat-row--mustard { background: var(--mustard); color: #fff; }
 .cat-row--mint    { background: var(--mint); }
+.cat-row--slate   { background: #8a8a8a; color: #fff; }
+.cat-row--half    { width: auto; flex: 1 1 0; justify-content: center; }
+.cat-all-none     { display: flex; gap: 10px; }
 .modal-done-btn {
   width: 100%; margin-top: 4px; padding: 13px; border-radius: 24px; border: none;
   background: var(--coral); color: #fff;

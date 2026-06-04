@@ -22,3 +22,14 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local env — copy .env.example and fill in your key
+.env
+
+# Local tooling
+.claude/
+.superpowers/
+
+# Scratch / backup files
+src/data/word_backup.json
+docs/superpowers/

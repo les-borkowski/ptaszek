@@ -2,6 +2,7 @@ import { renderHook, act } from '@testing-library/react'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { useSpeechSynthesis } from './useSpeechSynthesis'
 import { playAudio } from '../utils/audioPlayer'
+import { wordToFilename } from '../utils/audioFilename'
 
 vi.mock('../utils/audioPlayer', () => ({ playAudio: vi.fn() }))
 
@@ -30,7 +31,7 @@ describe('useSpeechSynthesis', () => {
   it('encodes Polish characters in the word path', () => {
     const { result } = renderHook(() => useSpeechSynthesis())
     act(() => { result.current.speak('słoń') })
-    expect(playAudio).toHaveBeenCalledWith(`/audio/words/${encodeURIComponent('słoń')}.mp3`)
+    expect(playAudio).toHaveBeenCalledWith(`/audio/words/${wordToFilename('słoń')}.mp3`)
   })
 
   it('sets isSpeaking true immediately when speak is called', () => {

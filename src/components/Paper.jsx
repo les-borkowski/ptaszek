@@ -1,4 +1,5 @@
 import { useMemo, useEffect, useRef, useState } from 'react'
+import { wordToFilename } from '../utils/audioFilename'
 
 /* =====================================================
    Paper.jsx — cut-paper primitives.
@@ -26,7 +27,7 @@ export const PRAISE_COLORS = [
 
 /* ---------- Polish voice praise ---------- */
 export function speakPraise(text) {
-  const audio = new Audio(`/audio/praise/${encodeURIComponent(text)}.mp3`)
+  const audio = new Audio(`/audio/praise/${wordToFilename(text)}.mp3`)
   audio.play().catch(() => {})
 }
 
