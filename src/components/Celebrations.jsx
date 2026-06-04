@@ -118,25 +118,30 @@ function CelMultiply({ playKey, word }) {
 
 /* ---------- 4. Praise balloons (paper tags float up) ---------- */
 function CelBalloons({ playKey, word }) {
-  const phrases = ['Brawo!', 'Super!', 'Tak!', 'Świetnie!', 'Pięknie!']
+  const items = useMemo(() => {
+    const rng = mulberry32(playKey)
+    const phrases = ['Brawo!', 'Super!', 'Tak!', 'Świetnie!', 'Pięknie!']
+    return phrases.map((p, i) => ({
+      p,
+      x: (i - 2) * 60 + (rng() - 0.5) * 16,
+      delay: i * 90,
+      rot: (i % 2 === 0 ? -1 : 1) * (3 + rng() * 6),
+    }))
+  }, [playKey])
+
   return (
     <div key={playKey} className="cel-root">
-      {phrases.map((p, i) => {
-        const x = (i - 2) * 60 + (Math.random() - 0.5) * 16
-        const delay = i * 90
-        const rot = (i % 2 === 0 ? -1 : 1) * (3 + Math.random() * 6)
-        return (
-          <span key={i} style={{
-            position: 'absolute', left: '50%', top: '50%',
-            transform: 'translate(-50%,-50%)',
-            animation: `paper-balloon 1.6s ease ${delay}ms forwards`,
-            '--bx': `${x}px`,
-            pointerEvents: 'none',
-          }}>
-            <PraiseTag text={p} color={PRAISE_COLORS[i]} size={22} rotate={rot} />
-          </span>
-        )
-      })}
+      {items.map(({ p, x, delay, rot }, i) => (
+        <span key={i} style={{
+          position: 'absolute', left: '50%', top: '50%',
+          transform: 'translate(-50%,-50%)',
+          animation: `paper-balloon 1.6s ease ${delay}ms forwards`,
+          '--bx': `${x}px`,
+          pointerEvents: 'none',
+        }}>
+          <PraiseTag text={p} color={PRAISE_COLORS[i]} size={22} rotate={rot} />
+        </span>
+      ))}
     </div>
   )
 }
