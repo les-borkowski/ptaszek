@@ -32,4 +32,24 @@ describe('fuzzyMatch', () => {
   test('leading and trailing whitespace is ignored', () => {
     expect(fuzzyMatch('  kwadrat  ', 'kwadrat')).toBe(true)
   })
+
+  test('"nie" does not match inside "niebieski"', () => {
+    expect(fuzzyMatch('niebieski', 'nie')).toBe(false)
+  })
+
+  test('"sto" does not match inside "stolik"', () => {
+    expect(fuzzyMatch('stolik', 'sto')).toBe(false)
+  })
+
+  test('"nie" matches at start of multi-word transcript', () => {
+    expect(fuzzyMatch('nie wiem', 'nie')).toBe(true)
+  })
+
+  test('"nie" matches as whole word surrounded by words', () => {
+    expect(fuzzyMatch('powiedziałem nie głośno', 'nie')).toBe(true)
+  })
+
+  test('multi-word target matches in transcript', () => {
+    expect(fuzzyMatch('dzień dobry', 'Dzień dobry')).toBe(true)
+  })
 })

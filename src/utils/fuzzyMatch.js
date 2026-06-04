@@ -1,5 +1,6 @@
 /**
- * Returns true if the recognized transcript contains the target Polish word.
+ * Returns true if the recognized transcript contains the target Polish word
+ * as a whole word (unicode-aware word-boundary matching).
  * Normalizes both strings to lowercase and trims whitespace.
  *
  * @param {string} transcript - Raw text from speech recognizer
@@ -8,8 +9,11 @@
  */
 export function fuzzyMatch(transcript, target) {
   if (!transcript || !target) return false
-  const normalizedTranscript = transcript.toLowerCase().trim()
-  const normalizedTarget = target.toLowerCase().trim()
-  if (!normalizedTarget) return false
-  return normalizedTranscript.includes(normalizedTarget)
+  const t = transcript.toLowerCase().trim()
+  const q = target.toLowerCase().trim()
+  if (!q) return false
+  const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  // Unicode-aware word boundary: not preceded/followed by a letter or digit
+  const re = new RegExp(`(?<![\\p{L}\\p{N}])${escaped}(?![\\p{L}\\p{N}])`, 'iu')
+  return re.test(t)
 }
