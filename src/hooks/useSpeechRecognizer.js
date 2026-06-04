@@ -96,9 +96,13 @@ export function useSpeechRecognizer() {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (watchdogRef.current) clearTimeout(watchdogRef.current)
+      if (watchdogRef.current) {
+        clearTimeout(watchdogRef.current)
+        watchdogRef.current = null
+      }
       if (recognitionRef.current) {
         try { recognitionRef.current.stop() } catch (_) {}
+        recognitionRef.current = null
       }
     }
   }, [])
