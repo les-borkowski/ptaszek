@@ -126,15 +126,29 @@ console.log('Authenticated via service account.\n')
 const wordsDir = resolve(root, 'public/audio/words')
 mkdirSync(wordsDir, { recursive: true })
 console.log(`Generating ${allWords.length} word files…`)
+let wordErrors = 0
 for (const word of allWords) {
-  await generateFile(resolve(wordsDir, `${wordToFilename(word)}.mp3`), word, token)
+  try {
+    await generateFile(resolve(wordsDir, `${wordToFilename(word)}.mp3`), word, token)
+  } catch (err) {
+    console.error(`  ERROR ${word}: ${err.message}`)
+    wordErrors++
+  }
 }
+if (wordErrors > 0) console.warn(`\n  ${wordErrors} word file(s) failed — re-run to retry.`)
 
 const praiseDir = resolve(root, 'public/audio/praise')
 mkdirSync(praiseDir, { recursive: true })
 console.log(`\nGenerating ${PRAISE_PHRASES.length} praise files…`)
+let praiseErrors = 0
 for (const phrase of PRAISE_PHRASES) {
-  await generateFile(resolve(praiseDir, `${wordToFilename(phrase)}.mp3`), phrase, token)
+  try {
+    await generateFile(resolve(praiseDir, `${wordToFilename(phrase)}.mp3`), phrase, token)
+  } catch (err) {
+    console.error(`  ERROR ${phrase}: ${err.message}`)
+    praiseErrors++
+  }
 }
+if (praiseErrors > 0) console.warn(`\n  ${praiseErrors} praise file(s) failed — re-run to retry.`)
 
 console.log('\nDone.')
