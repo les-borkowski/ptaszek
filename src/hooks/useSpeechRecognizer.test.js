@@ -144,6 +144,29 @@ describe('useSpeechRecognizer', () => {
     })
   })
 
+  test('calling start() while already listening stops the previous session', () => {
+    const { result } = renderHook(() => useSpeechRecognizer())
+    act(() => { result.current.start() })
+    expect(mockRecognition.start).toHaveBeenCalledTimes(1)
+    expect(mockRecognition.stop).toHaveBeenCalledTimes(0)
+    // Second start() without stopping first — must stop previous session
+    act(() => { result.current.start() })
+    expect(mockRecognition.stop).toHaveBeenCalledTimes(1)
+    expect(mockRecognition.start).toHaveBeenCalledTimes(2)
+  })
+
+  test('unmounting while listening stops recognition and cancels watchdog', () => {
+    vi.useFakeTimers()
+    const { result, unmount } = renderHook(() => useSpeechRecognizer())
+    act(() => { result.current.start() })
+    unmount()
+    expect(mockRecognition.stop).toHaveBeenCalledTimes(1)
+    // Watchdog must not restart recognition after unmount
+    act(() => { vi.advanceTimersByTime(8000) })
+    expect(mockRecognition.start).toHaveBeenCalledTimes(1)
+    vi.useRealTimers()
+  })
+
   describe('aborted error', () => {
     test('aborted onerror does not set error state', () => {
       const { result } = renderHook(() => useSpeechRecognizer())

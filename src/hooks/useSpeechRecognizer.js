@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 
 const WATCHDOG_MS = 8000
 
@@ -10,6 +10,17 @@ export function useSpeechRecognizer() {
   const watchdogRef = useRef(null)
   const startRef = useRef(null)
 
+  const stopExisting = useCallback(() => {
+    if (watchdogRef.current) {
+      clearTimeout(watchdogRef.current)
+      watchdogRef.current = null
+    }
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop() } catch (_) {}
+      recognitionRef.current = null
+    }
+  }, [])
+
   const start = useCallback(() => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition
@@ -18,6 +29,9 @@ export function useSpeechRecognizer() {
       setError('Speech recognition is not supported in this browser. Try Chrome or Edge.')
       return
     }
+
+    // Stop any existing session before starting a new one
+    stopExisting()
 
     let recognition
     try {
@@ -62,26 +76,30 @@ export function useSpeechRecognizer() {
     setIsListening(true)
     recognition.start()
 
-    if (watchdogRef.current) clearTimeout(watchdogRef.current)
     watchdogRef.current = setTimeout(() => {
       watchdogRef.current = null
       if (recognitionRef.current) {
         try { recognitionRef.current.stop() } catch (_) {}
+        recognitionRef.current = null
       }
       startRef.current?.()
     }, WATCHDOG_MS)
-  }, [])
+  }, [stopExisting])
 
   startRef.current = start
 
   const stop = useCallback(() => {
-    if (watchdogRef.current) {
-      clearTimeout(watchdogRef.current)
-      watchdogRef.current = null
-    }
-    if (recognitionRef.current) {
-      recognitionRef.current.stop()
-      setIsListening(false)
+    stopExisting()
+    setIsListening(false)
+  }, [stopExisting])
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (watchdogRef.current) clearTimeout(watchdogRef.current)
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop() } catch (_) {}
+      }
     }
   }, [])
 
