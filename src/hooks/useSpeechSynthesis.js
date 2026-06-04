@@ -6,9 +6,13 @@ export function useSpeechSynthesis() {
   const [isSpeaking, setIsSpeaking] = useState(false)
 
   const speak = useCallback(async (text) => {
+    if (!text?.trim()) return
     setIsSpeaking(true)
-    await playAudio(`/audio/words/${wordToFilename(text)}.mp3`)
-    setIsSpeaking(false)
+    try {
+      await playAudio(`/audio/words/${wordToFilename(text)}.mp3`)
+    } finally {
+      setIsSpeaking(false)
+    }
   }, [])
 
   return { speak, isSpeaking }

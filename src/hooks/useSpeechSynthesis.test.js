@@ -52,4 +52,13 @@ describe('useSpeechSynthesis', () => {
     const { result } = renderHook(() => useSpeechSynthesis())
     expect(() => act(() => { result.current.speak('pies') })).not.toThrow()
   })
+
+  it('sets isSpeaking false even when playAudio rejects', async () => {
+    playAudio.mockRejectedValue(new Error('network error'))
+    const { result } = renderHook(() => useSpeechSynthesis())
+    await act(async () => {
+      try { await result.current.speak('pies') } catch (_) {}
+    })
+    expect(result.current.isSpeaking).toBe(false)
+  })
 })

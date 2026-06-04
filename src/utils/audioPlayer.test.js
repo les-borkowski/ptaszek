@@ -53,4 +53,16 @@ describe('playAudio', () => {
     mockAudio.onerror()
     await expect(promise).resolves.toBeUndefined()
   })
+
+  describe('timeout', () => {
+    beforeEach(() => { vi.useFakeTimers() })
+    afterEach(() => { vi.useRealTimers() })
+
+    it('resolves after 10 s even if onended never fires', async () => {
+      mockAudio.play.mockResolvedValue(undefined)
+      const promise = playAudio('/audio/words/stuck.mp3')
+      await vi.advanceTimersByTimeAsync(10000)
+      await expect(promise).resolves.toBeUndefined()
+    })
+  })
 })
