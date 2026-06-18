@@ -17,5 +17,14 @@
   { "id": "domestic_animals",   "label": "Zwierzęta domowe",     "emoji": "🐾" },
   { "id": "body_parts",         "label": "Części ciała",         "emoji": "🖐️" },
   { "id": "clothing",           "label": "Ubrania",              "emoji": "👔" },
-  { "id": "useful_phrases",     "label": "Przydatne zwroty",     "emoji": "💬" }
+  { "id": "useful_phrases",     "label": "Przydatne zwroty",     "emoji": "💬" },
+  { "id": "pory_roku",          "label": "Pory roku",            "emoji": "🍂" },
+  { "id": "kierunki",           "label": "Kierunki",             "emoji": "🧭" },
+  { "id": "dom_meble",          "label": "Dom i meble",          "emoji": "🛋️" },
+  { "id": "zawody",             "label": "Zawody",               "emoji": "👷" },
+  { "id": "emocje",             "label": "Emocje",               "emoji": "😊" },
+  { "id": "technologia",        "label": "Technologia",          "emoji": "📱" },
+  { "id": "w_restauracji",      "label": "W restauracji",        "emoji": "🍽️" },
+  { "id": "zdrowie",            "label": "Zdrowie",              "emoji": "🏥" },
+  { "id": "dzikie_zwierzeta",   "label": "Dzikie zwierzęta",     "emoji": "🦁" }
 ]

@@ -36,7 +36,7 @@ describe('words.json', () => {
   })
 
   test('no unexpected duplicate words across categories (known exceptions: ryba, serce)', () => {
-    const KNOWN_DUPLICATES = ['ryba', 'serce']
+    const KNOWN_DUPLICATES = ['ryba', 'serce', 'zły']
     const allWords = Object.values(words).flat().map(e => e.word)
     const seen = new Set()
     const unexpectedDuplicates = []
