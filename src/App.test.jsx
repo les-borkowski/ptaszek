@@ -42,7 +42,7 @@ describe('App (cut-paper)', () => {
 
   test('renders the title screen on first render', () => {
     render(<App />)
-    expect(screen.getByText('Ptaszek')).toBeInTheDocument()
+    expect(screen.getByText('Słowik')).toBeInTheDocument()
   })
 
   test('shows the listening prompt bubble on first render', () => {

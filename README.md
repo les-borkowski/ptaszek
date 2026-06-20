@@ -1,4 +1,4 @@
-# Ptaszek — Polish Vocabulary Game for Kids
+# Słowik — Polish Vocabulary Game for Kids
 
 A browser-based Polish vocabulary game designed for young children. Players are shown an emoji + word card and must either say the word aloud or tap the correct picture after hearing it spoken. Correct answers build up a paper-art landscape that grows with the score.
 

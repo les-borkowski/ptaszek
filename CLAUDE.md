@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-**Ptaszek** ("Little Bird") — a Polish vocabulary game for young children. Players are shown an emoji+word card and must either say the word aloud ("Powiedz słowo" mode) or tap the correct picture after hearing it spoken ("Usłysz i dotknij" mode). Correct answers advance a score-driven scenery that builds up a paper landscape.
+**Słowik** ("Little Bird") — a Polish vocabulary game for young children. Players are shown an emoji+word card and must either say the word aloud ("Powiedz słowo" mode) or tap the correct picture after hearing it spoken ("Usłysz i dotknij" mode). Correct answers advance a score-driven scenery that builds up a paper landscape.
 
 ## Commands
 
@@ -62,10 +62,10 @@ Six celebration types (`confetti`, `stamp`, `multiply`, `balloons`, `rainbow`, `
 ### Persistence (`localStorage`)
 | Key | Content |
 |-----|---------|
-| `ptaszek_scores` | JSON array of `{ player, score, mode, date }`, capped at 50 |
-| `ptaszek_players` | JSON array of player name strings, capped at 8 |
-| `ptaszek_last_player` | most recent player name string |
-| `ptaszek_categories` | JSON array of selected category ids (null = all) |
+| `słowik_scores` | JSON array of `{ player, score, mode, date }`, capped at 50 |
+| `słowik_players` | JSON array of player name strings, capped at 8 |
+| `słowik_last_player` | most recent player name string |
+| `słowik_categories` | JSON array of selected category ids (null = all) |
 | `learnMode` | `"true"` / `"false"` |
 
 ### Testing notes

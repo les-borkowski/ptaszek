@@ -39,19 +39,19 @@ function shuffleArray(arr) {
 }
 
 function loadScores() {
-  try { return JSON.parse(localStorage.getItem('ptaszek_scores')) || [] } catch { return [] }
+  try { return JSON.parse(localStorage.getItem('słowik_scores')) || [] } catch { return [] }
 }
 function saveScore({ player, score, mode }) {
   const entries = loadScores()
   entries.push({ player, score, mode, date: new Date().toISOString() })
   entries.sort((a, b) => b.score - a.score)
-  localStorage.setItem('ptaszek_scores', JSON.stringify(entries.slice(0, 50)))
+  localStorage.setItem('słowik_scores', JSON.stringify(entries.slice(0, 50)))
 }
 function loadPlayers() {
-  try { return JSON.parse(localStorage.getItem('ptaszek_players')) || [] } catch { return [] }
+  try { return JSON.parse(localStorage.getItem('słowik_players')) || [] } catch { return [] }
 }
 function savePlayers(players) {
-  localStorage.setItem('ptaszek_players', JSON.stringify(players.slice(0, 8)))
+  localStorage.setItem('słowik_players', JSON.stringify(players.slice(0, 8)))
 }
 
 export default function App() {
@@ -70,12 +70,12 @@ export default function App() {
 
   const [screen, setScreen] = useState('title')
   const [player, setPlayer] = useState(
-    () => localStorage.getItem('ptaszek_last_player') || 'Gracz'
+    () => localStorage.getItem('słowik_last_player') || 'Gracz'
   )
   const [players, setPlayers] = useState(() => loadPlayers())
   const [mode, setMode] = useState('say')
   const [selectedCategories, setSelectedCategories] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('ptaszek_categories')) } catch { return null }
+    try { return JSON.parse(localStorage.getItem('słowik_categories')) } catch { return null }
   })
   const [hearOptions, setHearOptions] = useState([])
 
@@ -177,7 +177,7 @@ export default function App() {
     const trimmed = name.trim()
     if (!trimmed) return
     setPlayer(trimmed)
-    localStorage.setItem('ptaszek_last_player', trimmed)
+    localStorage.setItem('słowik_last_player', trimmed)
     const prev = loadPlayers().filter(p => p !== trimmed)
     const updated = [trimmed, ...prev]
     savePlayers(updated)
@@ -186,7 +186,7 @@ export default function App() {
 
   function handleCategoriesChange(cats) {
     setSelectedCategories(cats)
-    localStorage.setItem('ptaszek_categories', JSON.stringify(cats))
+    localStorage.setItem('słowik_categories', JSON.stringify(cats))
   }
 
   function handleHearSelect(option) {

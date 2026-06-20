@@ -20,7 +20,7 @@ export function TitleScreen({
 
           <div className="title-logo">
             <span className="title-bird">🐦</span>
-            <div className="title-name">Ptaszek</div>
+            <div className="title-name">Słowik</div>
             <div className="title-tagline">nauka polskiego</div>
           </div>
 
