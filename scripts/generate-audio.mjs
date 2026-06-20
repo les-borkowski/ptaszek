@@ -1,5 +1,5 @@
 // scripts/generate-audio.mjs
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs'
+import { readFileSync, writeFileSync, mkdirSync, existsSync, unlinkSync } from 'fs'
 import { createSign } from 'crypto'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
@@ -106,6 +106,20 @@ function wordToFilename(text) {
   return encodeURIComponent(text).replace(/%/g, '_')
 }
 
+// --- CLI args ---
+// --regen word1,word2   force-overwrite specific words (comma-separated, no spaces)
+
+const regenArg = process.argv.indexOf('--regen')
+const regenWords = new Set(
+  regenArg !== -1 && process.argv[regenArg + 1]
+    ? process.argv[regenArg + 1].split(',').map(w => w.trim())
+    : []
+)
+
+if (regenWords.size > 0) {
+  console.log(`Force-regenerating: ${[...regenWords].join(', ')}\n`)
+}
+
 // --- Character budget check ---
 
 const wordsJson = JSON.parse(readFileSync(resolve(root, 'src/data/words.json'), 'utf8'))
@@ -128,8 +142,12 @@ mkdirSync(wordsDir, { recursive: true })
 console.log(`Generating ${allWords.length} word files…`)
 let wordErrors = 0
 for (const word of allWords) {
+  const destPath = resolve(wordsDir, `${wordToFilename(word)}.mp3`)
+  if (regenWords.has(word) && existsSync(destPath)) {
+    unlinkSync(destPath)
+  }
   try {
-    await generateFile(resolve(wordsDir, `${wordToFilename(word)}.mp3`), word, token)
+    await generateFile(destPath, word, token)
   } catch (err) {
     console.error(`  ERROR ${word}: ${err.message}`)
     wordErrors++
