@@ -33,3 +33,8 @@ dist-ssr
 # Scratch / backup files
 src/data/word_backup.json
 docs/superpowers/
+
+# Gemini batch image generation working files
+.gemini-batch-job.json
+scripts/.batch-requests.jsonl
+scripts/.batch-results.jsonl

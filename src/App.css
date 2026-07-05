@@ -315,9 +315,12 @@ body {
   80%  { transform: translateY(-4px)   scale(0.98); }
   100% { transform: translateY(0)      scale(1); }
 }
+/* Jagged torn-paper edge instead of a straight clip line — sweeps well
+   past the box on both ends so it never hard-clips the card's rotated,
+   overhanging paper layers. */
 @keyframes paper-trans-tear {
-  0%   { clip-path: inset(0 100% 0 0); transform: rotate(-2deg); }
-  100% { clip-path: inset(0 0    0 0); transform: rotate(0); }
+  0%   { clip-path: polygon(0 0, -8% 0, -12% 20%, -4% 40%, -12% 60%, -4% 80%, -8% 100%, 0 100%); transform: rotate(-2deg); }
+  100% { clip-path: polygon(0 0, 108% 0, 104% 20%, 112% 40%, 104% 60%, 112% 80%, 108% 100%, 0 100%); transform: rotate(0); }
 }
 @keyframes paper-trans-pop {
   0%   { transform: scale(0.2)  rotate(-12deg); opacity: 0; }
@@ -527,6 +530,7 @@ body {
   aspect-ratio: 1; border-radius: 20px; border: none;
   background: var(--cream); cursor: pointer;
   display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
   filter: drop-shadow(4px 6px 0 rgba(42,38,32,0.20));
   transition: transform 0.1s, filter 0.1s;
 }
@@ -536,7 +540,6 @@ body {
 }
 .hat-card:active:not(:disabled) { transform: scale(0.97); }
 .hat-card:disabled { cursor: default; }
-.hat-emoji { font-size: 72px; line-height: 1; filter: drop-shadow(2px 3px 0 rgba(42,38,32,0.15)); }
 
 /* Touch devices: suppress persistent :hover states */
 @media (hover: none) {

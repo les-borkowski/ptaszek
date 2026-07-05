@@ -1,4 +1,4 @@
-import { PALETTE, PaperChain, SpeechBubble, MicButton, PaperBadge } from './Paper'
+import { PALETTE, PaperChain, SpeechBubble, MicButton, PaperBadge, WordImage } from './Paper'
 import { Celebration } from './Celebrations'
 import { nextStageAt } from './Scenery'
 
@@ -30,7 +30,7 @@ export function HearAndTouchDisplay({
             )}
           </div>
 
-          {/* 2×2 emoji card grid — centred vertically via auto margins */}
+          {/* 2×2 image card grid — centred vertically via auto margins */}
           <div className={`hat-grid${status === 'incorrect' ? ' hat-grid--shake' : ''}`}>
             {options.map((opt, i) => (
               <button
@@ -40,7 +40,7 @@ export function HearAndTouchDisplay({
                 disabled={status !== 'listening'}
                 aria-label={opt.word}
               >
-                <span className="hat-emoji">{opt.emoji}</span>
+                <WordImage word={opt} size={56} fill />
               </button>
             ))}
           </div>

@@ -70,54 +70,83 @@ export function PaperLayer({
   )
 }
 
-/* ---------- Torn-paper blob radii — irregular per-corner ---------- */
-function tornRadii(seed) {
+/* ---------- Torn-paper radii — irregular per-corner ----------
+   `base`/`spread` control how rounded the result reads: low values give a
+   squared-off card with just a hint of torn-paper unevenness, high values
+   give the rounder blob look. */
+function tornRadii(seed, base = 38, spread = 10) {
   const r = mulberry32(seed)
-  const a = 38 + r() * 10
-  const b = 38 + r() * 10
-  const c = 38 + r() * 10
-  const d = 38 + r() * 10
-  const e = 38 + r() * 10
-  const f = 38 + r() * 10
-  const g = 38 + r() * 10
-  const h = 38 + r() * 10
+  const a = base + r() * spread
+  const b = base + r() * spread
+  const c = base + r() * spread
+  const d = base + r() * spread
+  const e = base + r() * spread
+  const f = base + r() * spread
+  const g = base + r() * spread
+  const h = base + r() * spread
   return `${a}% ${b}% ${c}% ${d}% / ${e}% ${f}% ${g}% ${h}%`
 }
 
-/* ---------- WordCard — layered torn-paper tag ---------- */
-export function WordCard({ word, size = 220, seed = 7 }) {
-  const radBack  = useMemo(() => tornRadii(seed),     [seed])
-  const radFront = useMemo(() => tornRadii(seed + 1), [seed])
+/* ---------- WordImage — illustrated word art, falls back to emoji ----------
+   `fill`: stretch to 100% of the parent and crop to cover it (edge-to-edge
+   tile), instead of sizing to `size` and letterboxing inside it. */
+export function WordImage({ word, size, fill = false, style }) {
+  const [broken, setBroken] = useState(false)
+  // Reset on word change — WordCard doesn't always remount between words
+  // (see WordTransition), so a stale "broken" flag could otherwise stick.
+  useEffect(() => { setBroken(false) }, [word.word])
+
+  if (broken) {
+    return <span style={{ fontSize: size, lineHeight: 1, ...style }}>{word.emoji}</span>
+  }
+  const dims = fill ? { width: '100%', height: '100%' } : { width: size, height: size }
   return (
-    <div style={{ position: 'relative', width: size, height: size }}>
-      {/* Back layer — bigger jagged piece */}
-      <PaperLayer color={PALETTE.mustard} rotate={-4} shadow={10} style={{
-        position: 'absolute', inset: '-8px', borderRadius: radBack,
+    <img
+      src={`/images/words/${wordToFilename(word.word)}.png`}
+      alt={word.word}
+      onError={() => setBroken(true)}
+      style={{ ...dims, objectFit: fill ? 'cover' : 'contain', ...style }}
+    />
+  )
+}
+
+/* ---------- WordCard — layered paper picture + a separate word tag ---------- */
+export function WordCard({ word, size = 220, seed = 7 }) {
+  const radBack  = useMemo(() => tornRadii(seed, 10, 6),      [seed])
+  const radFront = useMemo(() => tornRadii(seed + 1, 10, 6),  [seed])
+  const radLabel = useMemo(() => tornRadii(seed + 2, 14, 8),  [seed])
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
+      {/* Picture card */}
+      <div style={{ position: 'relative', width: size, height: size }}>
+        {/* Back layer — bigger jagged piece */}
+        <PaperLayer color={PALETTE.mustard} rotate={-4} shadow={10} style={{
+          position: 'absolute', inset: '-8px', borderRadius: radBack,
+        }}>
+          <div style={{ width: '100%', height: '100%' }} />
+        </PaperLayer>
+        {/* Front layer — filled edge-to-edge by the picture */}
+        <PaperLayer color={PALETTE.cream} rotate={2} shadow={6} style={{
+          position: 'absolute', inset: 14, borderRadius: radFront,
+          overflow: 'hidden',
+        }}>
+          <WordImage word={word} fill />
+        </PaperLayer>
+      </div>
+
+      {/* Word label — separate paper clip below the picture */}
+      <PaperLayer color={PALETTE.cream} rotate={-2} shadow={5} style={{
+        borderRadius: radLabel,
+        padding: '8px 20px',
+        maxWidth: size + 40,
       }}>
-        <div style={{ width: '100%', height: '100%' }} />
-      </PaperLayer>
-      {/* Front layer — cream tag */}
-      <PaperLayer color={PALETTE.cream} rotate={2} shadow={6} style={{
-        position: 'absolute', inset: 14, borderRadius: radFront,
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        gap: 12, padding: 18,
-      }}>
-        {/* Tiny hole + string */}
-        <div style={{
-          position: 'absolute', top: 14, left: '50%', transform: 'translateX(-50%)',
-          width: 10, height: 10, borderRadius: '50%',
-          background: PALETTE.ink, opacity: 0.85,
-        }} />
-        <span style={{
-          fontSize: size * 0.42, lineHeight: 1, marginTop: 14,
-          filter: 'drop-shadow(3px 4px 0 rgba(42,38,32,0.18))',
-        }}>{word.emoji}</span>
         <div style={{
           fontFamily: 'var(--f-display)',
           fontWeight: 700,
-          fontSize: size * 0.13,
+          fontSize: size * 0.09,
           color: PALETTE.ink,
           letterSpacing: 0.5,
+          textAlign: 'center',
         }}>{word.word}</div>
       </PaperLayer>
     </div>

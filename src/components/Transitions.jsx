@@ -13,13 +13,13 @@ function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)] }
 export function WordTransition({ word, size = 220 }) {
   const [variant, setVariant] = useState(() => pickRandom(TRANSITION_KINDS))
   const [renderKey, setRenderKey] = useState(0)
-  const prev = useRef(word.polish)
+  const prev = useRef(word.word)
 
   useEffect(() => {
-    if (prev.current !== word.polish) {
+    if (prev.current !== word.word) {
       setVariant(pickRandom(TRANSITION_KINDS))
       setRenderKey((k) => k + 1)
-      prev.current = word.polish
+      prev.current = word.word
     }
   }, [word])
 

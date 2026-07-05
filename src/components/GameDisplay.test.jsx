@@ -16,9 +16,9 @@ const defaultProps = {
 }
 
 describe('GameDisplay (cut-paper)', () => {
-  test('renders the current word emoji', () => {
+  test('renders the current word illustration', () => {
     render(<GameDisplay {...defaultProps} />)
-    expect(screen.getByText('🟥')).toBeInTheDocument()
+    expect(screen.getByAltText('kwadrat')).toBeInTheDocument()
   })
 
   test('renders the current word label', () => {
