@@ -1,9 +1,9 @@
-import { PALETTE, PaperChain, SpeechBubble, MicButton, PaperBadge, WordImage } from './Paper'
+import { PALETTE, PaperChain, SpeechBubble, MicButton, PaperBadge, SkipButton, WordImage } from './Paper'
 import { Celebration } from './Celebrations'
 import { nextStageAt } from './Scenery'
 
 export function HearAndTouchDisplay({
-  word, options, score, status, celebration, onSelect, onBack, onSpeak,
+  word, options, score, status, celebration, onSelect, onBack, onSpeak, onSkip = () => {},
 }) {
   const next = nextStageAt(score)
   return (
@@ -11,13 +11,18 @@ export function HearAndTouchDisplay({
       <div className="game-kraft">
         <div className="game-shell-inner hat-screen">
 
-          {/* Header — back nav + score (left)  |  game title bubble (right) */}
+          {/* Header — back nav + score + next-stage hint (left)  |  game title bubble (right) */}
           <div className="game-header">
             <div className="game-header-start">
               <button className="back-btn" onClick={onBack} aria-label="Wróć do menu">
                 ← wróć
               </button>
               <PaperChain score={score} size="md" />
+              {next != null && (
+                <PaperBadge color={PALETTE.cream} rotate={-2} size={12}>
+                  Następny etap za {next - score}
+                </PaperBadge>
+              )}
             </div>
             {status === 'listening' && (
               <SpeechBubble>Usłysz i dotknij</SpeechBubble>
@@ -45,13 +50,9 @@ export function HearAndTouchDisplay({
             ))}
           </div>
 
-          {/* Footer — next milestone hint (mirrors GameDisplay) */}
+          {/* Footer — skip control (bottom-left) */}
           <div className="game-footer">
-            {next != null && (
-              <PaperBadge color={PALETTE.cream} rotate={-2} size={12}>
-                Następny etap za {next - score}
-              </PaperBadge>
-            )}
+            <SkipButton onClick={onSkip} />
           </div>
 
           {/* Speaker button — replay the spoken word (mirrors GameDisplay mic-cluster) */}
