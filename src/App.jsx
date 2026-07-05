@@ -279,6 +279,8 @@ export default function App() {
           score={score}
           status={status}
           celebration={celebration}
+          learnMode={learnMode}
+          onLearnModeChange={handleLearnModeChange}
           onSelect={handleHearSelect}
           onBack={handleBackToTitle}
           onSpeak={handleSpeak}

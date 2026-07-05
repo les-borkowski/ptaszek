@@ -524,10 +524,14 @@ body {
   position: relative;
 }
 
+.hat-word-label {
+  margin-top: auto;
+  margin-bottom: 20px;
+}
+
 .hat-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
   width: 100%; max-width: 320px;
-  margin-top: auto;
   margin-bottom: auto;
 }
 .hat-grid--shake { animation: paper-nudge 0.5s ease; }

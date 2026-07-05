@@ -1,28 +1,22 @@
-import { PALETTE, PaperChain, SpeechBubble, MicButton, PaperBadge, SkipButton, WordImage } from './Paper'
+import { PALETTE, PaperChain, SpeechBubble, MicButton, SkipButton, WordImage, WordLabel } from './Paper'
 import { Celebration } from './Celebrations'
-import { nextStageAt } from './Scenery'
 
 export function HearAndTouchDisplay({
   word, options, score, status, celebration, onSelect, onBack, onSpeak, onSkip = () => {},
+  learnMode = false, onLearnModeChange = () => {},
 }) {
-  const next = nextStageAt(score)
   return (
     <div className="game-shell">
       <div className="game-kraft">
         <div className="game-shell-inner hat-screen">
 
-          {/* Header — back nav + score + next-stage hint (left)  |  game title bubble (right) */}
+          {/* Header — back nav + score (left)  |  game title bubble (right) */}
           <div className="game-header">
             <div className="game-header-start">
               <button className="back-btn" onClick={onBack} aria-label="Wróć do menu">
                 ← wróć
               </button>
               <PaperChain score={score} size="md" />
-              {next != null && (
-                <PaperBadge color={PALETTE.cream} rotate={-2} size={12}>
-                  Następny etap za {next - score}
-                </PaperBadge>
-              )}
             </div>
             {status === 'listening' && (
               <SpeechBubble>Usłysz i dotknij</SpeechBubble>
@@ -34,6 +28,13 @@ export function HearAndTouchDisplay({
               <SpeechBubble style={{ background: PALETTE.rose }}>Spróbuj jeszcze raz…</SpeechBubble>
             )}
           </div>
+
+          {/* Learn-mode word label — revealed above the grid when the 🤫 toggle is on */}
+          {learnMode && (
+            <div className="hat-word-label">
+              <WordLabel word={word} size={160} />
+            </div>
+          )}
 
           {/* 2×2 image card grid — centred vertically via auto margins */}
           <div className={`hat-grid${status === 'incorrect' ? ' hat-grid--shake' : ''}`}>
@@ -55,8 +56,16 @@ export function HearAndTouchDisplay({
             <SkipButton onClick={onSkip} />
           </div>
 
-          {/* Speaker button — replay the spoken word (mirrors GameDisplay mic-cluster) */}
+          {/* Speaker button + learn-mode toggle (mirrors GameDisplay mic-cluster) */}
           <div className="mic-cluster">
+            <label className={`hint-badge${learnMode ? ' hint-badge--on' : ''}`}>
+              <input
+                type="checkbox"
+                checked={learnMode}
+                onChange={(e) => onLearnModeChange(e.target.checked)}
+              />
+              🤫
+            </label>
             <MicButton
               onClick={onSpeak}
               label="🔊"

@@ -42,15 +42,9 @@ describe('HearAndTouchDisplay', () => {
     expect(screen.getByText(/POSTĘP/i)).toBeInTheDocument()
   })
 
-  test('renders next-milestone hint when below a milestone', () => {
+  test('does not render a milestone hint badge', () => {
     render(<HearAndTouchDisplay {...defaultProps} score={2} />)
-    expect(screen.getByText(/Następny etap za 3/i)).toBeInTheDocument()
-  })
-
-  test('renders the next-milestone hint inside the header, not the footer', () => {
-    const { container } = render(<HearAndTouchDisplay {...defaultProps} score={2} />)
-    const headerStart = container.querySelector('.game-header-start')
-    expect(headerStart).toContainElement(screen.getByText(/Następny etap za 3/i))
+    expect(screen.queryByText(/Następny etap/i)).not.toBeInTheDocument()
   })
 
   test('renders a Skip button in the footer that calls onSkip when clicked', async () => {
@@ -100,5 +94,30 @@ describe('HearAndTouchDisplay', () => {
     await userEvent.click(cards[0])
     expect(onSelect).toHaveBeenCalledTimes(1)
     expect(onSelect).toHaveBeenCalledWith(mockOptions[0])
+  })
+
+  test('does not show the word label when learn mode is off', () => {
+    render(<HearAndTouchDisplay {...defaultProps} learnMode={false} />)
+    expect(screen.queryByText('pies')).not.toBeInTheDocument()
+  })
+
+  test('shows the word label above the grid when learn mode is on', () => {
+    render(<HearAndTouchDisplay {...defaultProps} learnMode={true} />)
+    expect(screen.getByText('pies')).toBeInTheDocument()
+  })
+
+  test('renders learn-mode toggle reflecting prop value', () => {
+    const { rerender } = render(<HearAndTouchDisplay {...defaultProps} learnMode={false} />)
+    expect(screen.getByRole('checkbox')).not.toBeChecked()
+
+    rerender(<HearAndTouchDisplay {...defaultProps} learnMode={true} />)
+    expect(screen.getByRole('checkbox')).toBeChecked()
+  })
+
+  test('calls onLearnModeChange(true) when unchecked toggle is clicked', async () => {
+    const onChange = vi.fn()
+    render(<HearAndTouchDisplay {...defaultProps} learnMode={false} onLearnModeChange={onChange} />)
+    await userEvent.click(screen.getByRole('checkbox'))
+    expect(onChange).toHaveBeenCalledWith(true)
   })
 })

@@ -110,11 +110,31 @@ export function WordImage({ word, size, fill = false, style }) {
   )
 }
 
+/* ---------- WordLabel — torn-paper tag showing a word's text ---------- */
+export function WordLabel({ word, size = 220, seed = 7 }) {
+  const radLabel = useMemo(() => tornRadii(seed + 2, 14, 8), [seed])
+  return (
+    <PaperLayer color={PALETTE.cream} rotate={-2} shadow={5} style={{
+      borderRadius: radLabel,
+      padding: '8px 20px',
+      maxWidth: size + 40,
+    }}>
+      <div style={{
+        fontFamily: 'var(--f-display)',
+        fontWeight: 700,
+        fontSize: size * 0.09,
+        color: PALETTE.ink,
+        letterSpacing: 0.5,
+        textAlign: 'center',
+      }}>{word.word}</div>
+    </PaperLayer>
+  )
+}
+
 /* ---------- WordCard — layered paper picture + a separate word tag ---------- */
 export function WordCard({ word, size = 220, seed = 7 }) {
   const radBack  = useMemo(() => tornRadii(seed, 10, 6),      [seed])
   const radFront = useMemo(() => tornRadii(seed + 1, 10, 6),  [seed])
-  const radLabel = useMemo(() => tornRadii(seed + 2, 14, 8),  [seed])
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
       {/* Picture card */}
@@ -134,21 +154,7 @@ export function WordCard({ word, size = 220, seed = 7 }) {
         </PaperLayer>
       </div>
 
-      {/* Word label — separate paper clip below the picture */}
-      <PaperLayer color={PALETTE.cream} rotate={-2} shadow={5} style={{
-        borderRadius: radLabel,
-        padding: '8px 20px',
-        maxWidth: size + 40,
-      }}>
-        <div style={{
-          fontFamily: 'var(--f-display)',
-          fontWeight: 700,
-          fontSize: size * 0.09,
-          color: PALETTE.ink,
-          letterSpacing: 0.5,
-          textAlign: 'center',
-        }}>{word.word}</div>
-      </PaperLayer>
+      <WordLabel word={word} size={size} seed={seed} />
     </div>
   )
 }

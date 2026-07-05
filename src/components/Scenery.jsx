@@ -31,11 +31,6 @@ export function stageReached(score, key) {
   return s ? score >= s.at : false
 }
 
-export function nextStageAt(score) {
-  const next = STAGES.find((s) => s.at > score)
-  return next ? next.at : null
-}
-
 /* ---------- Big paper sun in the corner ---------- */
 function PaperSun() {
   return (

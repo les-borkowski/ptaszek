@@ -89,16 +89,9 @@ describe('GameDisplay (cut-paper)', () => {
     expect(screen.getByText(/×1/)).toBeInTheDocument()
   })
 
-  test('renders next-stage hint badge', () => {
+  test('does not render a milestone hint badge', () => {
     render(<GameDisplay {...defaultProps} score={2} />)
-    // next stage is at score 5
-    expect(screen.getByText(/Następny etap za 3/i)).toBeInTheDocument()
-  })
-
-  test('renders the next-stage hint badge inside the header, not the footer', () => {
-    const { container } = render(<GameDisplay {...defaultProps} score={2} />)
-    const headerStart = container.querySelector('.game-header-start')
-    expect(headerStart).toContainElement(screen.getByText(/Następny etap za 3/i))
+    expect(screen.queryByText(/Następny etap/i)).not.toBeInTheDocument()
   })
 
   test('renders a Skip button in the footer that calls onSkip when clicked', async () => {
