@@ -83,6 +83,7 @@ export default function App() {
   const { speak, isSpeaking } = useSpeechSynthesis()
   const prevIsSpeakingRef = useRef(false)
   const lastProcessedTranscript = useRef('')
+  const pendingTimeoutRef = useRef(null)
 
   // On each new word while game is active: speak (learn mode) or listen directly
   useEffect(() => {
@@ -120,7 +121,8 @@ export default function App() {
       playSuccess()
       speakPraise(phrase)
       const delay = isMilestone ? 2400 : 1600
-      setTimeout(() => {
+      pendingTimeoutRef.current = setTimeout(() => {
+        pendingTimeoutRef.current = null
         setCelebration(null)
         setWordState(({ deck: d }) => {
           const { word, remainingDeck } = getNextWord(d, words, selectedCategories)
@@ -131,7 +133,8 @@ export default function App() {
     } else {
       setStatus('incorrect')
       playError()
-      setTimeout(() => {
+      pendingTimeoutRef.current = setTimeout(() => {
+        pendingTimeoutRef.current = null
         setStatus('listening')
         start()
       }, 1500)
@@ -202,7 +205,8 @@ export default function App() {
       playSuccess()
       speakPraise(phrase)
       const delay = isMilestone ? 2400 : 1600
-      setTimeout(() => {
+      pendingTimeoutRef.current = setTimeout(() => {
+        pendingTimeoutRef.current = null
         setCelebration(null)
         setWordState(({ deck: d }) => {
           const { word, remainingDeck } = getNextWord(d, words, selectedCategories)
@@ -213,8 +217,25 @@ export default function App() {
     } else {
       setStatus('incorrect')
       playError()
-      setTimeout(() => setStatus('listening'), 1500)
+      pendingTimeoutRef.current = setTimeout(() => {
+        pendingTimeoutRef.current = null
+        setStatus('listening')
+      }, 1500)
     }
+  }
+
+  function handleSkip() {
+    if (pendingTimeoutRef.current) {
+      clearTimeout(pendingTimeoutRef.current)
+      pendingTimeoutRef.current = null
+    }
+    if (isListening) stop()
+    setCelebration(null)
+    setStatus('listening')
+    setWordState(({ deck: d }) => {
+      const { word, remainingDeck } = getNextWord(d, words, selectedCategories)
+      return { currentWord: word, deck: remainingDeck }
+    })
   }
 
   return (
@@ -248,6 +269,7 @@ export default function App() {
           onLearnModeChange={handleLearnModeChange}
           onSpeak={handleSpeak}
           onBack={handleBackToTitle}
+          onSkip={handleSkip}
         />
       )}
       {screen === 'game' && mode === 'hear' && (
@@ -260,6 +282,7 @@ export default function App() {
           onSelect={handleHearSelect}
           onBack={handleBackToTitle}
           onSpeak={handleSpeak}
+          onSkip={handleSkip}
         />
       )}
       {screen === 'scores' && (
