@@ -1,4 +1,4 @@
-import { PaperChain, SpeechBubble, MicButton, PaperBadge, PALETTE } from './Paper'
+import { PaperChain, SpeechBubble, MicButton, PaperBadge, SkipButton, PALETTE } from './Paper'
 import { Scene, nextStageAt } from './Scenery'
 import { WordTransition } from './Transitions'
 import { Celebration } from './Celebrations'
@@ -8,10 +8,10 @@ import { Celebration } from './Celebrations'
    Layers:
      0. Kraft paper background + grid texture
      1. Scene (sun, mountains, hills, grass, trees, house, birds)
-     2. Header: paper chain (left) + speech-bubble prompt (right)
+     2. Header: paper chain + next-stage hint (left) + speech-bubble prompt (right)
      3. Word card center (with random transition)
      4. Feedback line ("Brawo!" / "Hmm…")
-     5. Controls: learn-mode toggle, mic button
+     5. Controls: skip button (bottom-left), learn-mode toggle + mic button (bottom-right)
      6. Celebration overlay (when status==='correct')
    ===================================================== */
 
@@ -24,6 +24,7 @@ export function GameDisplay({
   onLearnModeChange = () => {},
   onSpeak = () => {},
   onBack = () => {},
+  onSkip = () => {},
 }) {
   const next = nextStageAt(score)
   return (
@@ -33,13 +34,18 @@ export function GameDisplay({
         <Scene score={score} />
 
         <div className="game-shell-inner">
-          {/* Header — back nav + paper chain (left) + prompt bubble (right) */}
+          {/* Header — back nav + paper chain + next-stage hint (left) | prompt bubble (right) */}
           <div className="game-header">
             <div className="game-header-start">
               <button className="back-btn" onClick={onBack} aria-label="Wróć do menu">
                 ← wróć
               </button>
               <PaperChain score={score} size="md" />
+              {next != null && (
+                <PaperBadge color={PALETTE.cream} rotate={-2} size={12}>
+                  Następny etap za {next - score}
+                </PaperBadge>
+              )}
             </div>
             {status === 'listening' && (
               <SpeechBubble>Powiedz słowo!</SpeechBubble>
@@ -62,13 +68,9 @@ export function GameDisplay({
             )}
           </div>
 
-          {/* Footer area — next milestone hint */}
+          {/* Footer area — skip control (bottom-left) */}
           <div className="game-footer">
-            {next != null && (
-              <PaperBadge color={PALETTE.cream} rotate={-2} size={12}>
-                Następny etap za {next - score}
-              </PaperBadge>
-            )}
+            <SkipButton onClick={onSkip} />
           </div>
 
           {/* Controls — mic + hint badge cluster (bottom-right) */}

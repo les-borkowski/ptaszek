@@ -95,6 +95,22 @@ describe('GameDisplay (cut-paper)', () => {
     expect(screen.getByText(/Następny etap za 3/i)).toBeInTheDocument()
   })
 
+  test('renders the next-stage hint badge inside the header, not the footer', () => {
+    const { container } = render(<GameDisplay {...defaultProps} score={2} />)
+    const headerStart = container.querySelector('.game-header-start')
+    expect(headerStart).toContainElement(screen.getByText(/Następny etap za 3/i))
+  })
+
+  test('renders a Skip button in the footer that calls onSkip when clicked', async () => {
+    const onSkip = vi.fn()
+    const { container } = render(<GameDisplay {...defaultProps} onSkip={onSkip} />)
+    const footer = container.querySelector('.game-footer')
+    const skipBtn = screen.getByRole('button', { name: /Pomiń słowo/i })
+    expect(footer).toContainElement(skipBtn)
+    await userEvent.click(skipBtn)
+    expect(onSkip).toHaveBeenCalledTimes(1)
+  })
+
   test('renders a back button that calls onBack when clicked', async () => {
     const onBack = vi.fn()
     render(<GameDisplay {...defaultProps} onBack={onBack} />)

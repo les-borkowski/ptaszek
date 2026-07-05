@@ -184,6 +184,11 @@ body {
   transform: rotate(-3deg) translate(2px,3px) !important;
   filter: drop-shadow(1px 2px 0 rgba(42,38,32,0.22)) !important;
 }
+.skip-btn:hover { transform: rotate(-1deg) translate(-1px,-1px); }
+.skip-btn:active {
+  transform: rotate(-1deg) translate(2px,3px);
+  filter: drop-shadow(1px 2px 0 rgba(42,38,32,0.22));
+}
 
 /* ---------- Celebration overlay ---------- */
 .celebration-overlay {

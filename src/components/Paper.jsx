@@ -269,6 +269,31 @@ export function MicButton({ onClick, label = '🎤', ariaLabel = 'Wymów słowo'
   )
 }
 
+/* ---------- SkipButton — cream paper pill, skip the current word ---------- */
+export function SkipButton({ onClick, label = '⏭ Pomiń', ariaLabel = 'Pomiń słowo' }) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label={ariaLabel}
+      className="skip-btn"
+      style={{
+        background: PALETTE.cream,
+        border: 'none',
+        cursor: 'pointer',
+        padding: '10px 16px',
+        borderRadius: 14,
+        fontFamily: 'var(--f-display)',
+        fontWeight: 700,
+        fontSize: 14,
+        color: PALETTE.ink,
+        filter: 'drop-shadow(3px 4px 0 rgba(42,38,32,0.20))',
+        transform: 'rotate(-3deg)',
+        transition: 'transform 0.1s ease, filter 0.1s ease',
+      }}
+    >{label}</button>
+  )
+}
+
 /* ---------- PaperBadge — small floating tag ---------- */
 export function PaperBadge({ children, color = PALETTE.mint, rotate = -3, size = 14 }) {
   return (
