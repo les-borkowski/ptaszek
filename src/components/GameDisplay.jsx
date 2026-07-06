@@ -73,7 +73,10 @@ export function GameDisplay({
 
           {/* Controls — mic + hint badge cluster (bottom-right) */}
           <div className="mic-cluster">
-            <label className={`hint-badge hint-badge--en${showTranslation ? ' hint-badge--on' : ''}`}>
+            <label
+              className={`hint-badge hint-badge--en${showTranslation ? ' hint-badge--on' : ''}`}
+              data-tooltip="Pokaż tłumaczenie"
+            >
               <input
                 type="checkbox"
                 checked={showTranslation}
@@ -81,9 +84,11 @@ export function GameDisplay({
                 aria-label="Pokaż tłumaczenie angielskie"
               />
               🇬🇧
-              <span className="badge-caption">EN</span>
             </label>
-            <label className={`hint-badge${learnMode ? ' hint-badge--on' : ''}`}>
+            <label
+              className={`hint-badge${learnMode ? ' hint-badge--on' : ''}`}
+              data-tooltip="Tryb nauki"
+            >
               <input
                 type="checkbox"
                 checked={learnMode}
@@ -91,7 +96,6 @@ export function GameDisplay({
                 aria-label="Tryb nauki: pokaż i wymów słowo"
               />
               🤫
-              <span className="badge-caption">nauka</span>
             </label>
             <MicButton onClick={onSpeak} listening={isListening} />
           </div>

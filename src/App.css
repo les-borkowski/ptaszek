@@ -150,19 +150,26 @@ body {
   z-index: 3;
 }
 
-/* ---------- Mic cluster ---------- */
+/* ---------- Mic cluster — triangular arrangement (mic top-right, learn left, EN bottom) ---------- */
 .mic-cluster {
   position: absolute;
   bottom: 22px;
   right: 22px;
+  width: 106px;
+  height: 106px;
   z-index: 3;
+}
+.mic-cluster .paper-mic {
+  position: absolute;
+  top: 0;
+  left: 42px;
 }
 
 /* ---------- Hint badge ---------- */
 .hint-badge {
   position: absolute;
-  bottom: 8px;
-  right: 54px;
+  top: 32px;
+  left: 0;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -187,30 +194,42 @@ body {
   background: var(--mint);
 }
 .hint-badge:active { transform: rotate(4deg) translateY(2px); }
-.badge-caption {
+/* Each badge's own rotate() transform creates a stacking context, so a
+   hovered badge (and its tooltip) would otherwise paint behind a sibling
+   badge that comes later in the DOM (e.g. the mic). Bump it above its
+   siblings for the duration of the hover. */
+.hint-badge:hover {
+  z-index: 20;
+}
+
+/* Tooltip bubble — replaces the old always-visible caption text */
+.hint-badge::after {
+  content: attr(data-tooltip);
   position: absolute;
-  top: 100%;
+  bottom: 100%;
   left: 50%;
-  transform: translateX(-50%);
-  margin-top: 4px;
+  transform: translateX(-50%) rotate(-2deg);
+  margin-bottom: 6px;
   background: var(--cream);
   color: var(--ink);
   font-family: var(--f-display);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 6px;
+  padding: 4px 10px;
+  border-radius: 8px;
   white-space: nowrap;
   filter: drop-shadow(1px 2px 0 rgba(42,38,32,0.18));
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 10;
+}
+.hint-badge:hover::after {
+  opacity: 1;
 }
 .hint-badge--en {
-  right: 108px;
-}
-.mic-cluster .paper-mic {
-  position: absolute;
-  bottom: 0;
-  right: 0;
+  top: 58px;
+  left: 36px;
 }
 .paper-mic { position: relative; }
 .paper-mic:hover { transform: rotate(-3deg) translate(-1px,-1px) !important; }
@@ -574,6 +593,10 @@ body {
 .hat-word-label {
   margin-top: auto;
   margin-bottom: 20px;
+  transition: opacity 0.15s ease;
+}
+.hat-word-label--hidden {
+  opacity: 0;
 }
 
 .hat-grid {

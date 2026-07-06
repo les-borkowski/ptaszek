@@ -18,6 +18,13 @@ describe('flattenWords', () => {
     expect(result).toHaveLength(2)
     expect(result.every(w => ['kwadrat','koło'].includes(w.word))).toBe(true)
   })
+  it('attaches the category id to each word', () => {
+    const result = flattenWords(WORDS, null)
+    const kolo = result.find(w => w.word === 'koło')
+    const czerwony = result.find(w => w.word === 'czerwony')
+    expect(kolo.category).toBe('shapes')
+    expect(czerwony.category).toBe('colours')
+  })
 })
 
 describe('buildDeck', () => {

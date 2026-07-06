@@ -98,14 +98,18 @@ describe('HearAndTouchDisplay', () => {
     expect(onSelect).toHaveBeenCalledWith(mockOptions[0])
   })
 
-  test('does not show the word label when learn mode is off', () => {
+  test('hides the word label slot (but keeps its layout space) when learn mode is off', () => {
     render(<HearAndTouchDisplay {...defaultProps} learnMode={false} />)
-    expect(screen.queryByText('pies')).not.toBeInTheDocument()
+    const label = screen.getByText('pies').closest('.hat-word-label')
+    expect(label).toHaveClass('hat-word-label--hidden')
+    expect(label).toHaveAttribute('aria-hidden', 'true')
   })
 
   test('shows the word label above the grid when learn mode is on', () => {
     render(<HearAndTouchDisplay {...defaultProps} learnMode={true} />)
-    expect(screen.getByText('pies')).toBeInTheDocument()
+    const label = screen.getByText('pies').closest('.hat-word-label')
+    expect(label).not.toHaveClass('hat-word-label--hidden')
+    expect(label).toHaveAttribute('aria-hidden', 'false')
   })
 
   test('renders learn-mode toggle reflecting prop value', () => {
@@ -126,17 +130,18 @@ describe('HearAndTouchDisplay', () => {
 
   test('does not show the translation when learn mode is on but showTranslation is off', () => {
     render(<HearAndTouchDisplay {...defaultProps} learnMode={true} showTranslation={false} />)
-    expect(screen.queryByText('dog')).not.toBeInTheDocument()
+    expect(screen.getByText('dog').parentElement).toHaveStyle({ opacity: 0 })
   })
 
   test('shows the translation only when both learn mode and showTranslation are on', () => {
     render(<HearAndTouchDisplay {...defaultProps} learnMode={true} showTranslation={true} />)
-    expect(screen.getByText('dog')).toBeInTheDocument()
+    expect(screen.getByText('dog').parentElement).toHaveStyle({ opacity: 1 })
   })
 
   test('does not show the translation when showTranslation is on but learn mode is off', () => {
     render(<HearAndTouchDisplay {...defaultProps} learnMode={false} showTranslation={true} />)
-    expect(screen.queryByText('dog')).not.toBeInTheDocument()
+    const label = screen.getByText('dog').closest('.hat-word-label')
+    expect(label).toHaveClass('hat-word-label--hidden')
   })
 
   test('calls onShowTranslationChange(true) when unchecked EN toggle is clicked', async () => {

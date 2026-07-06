@@ -3,7 +3,7 @@ import { useSpeechRecognizer } from './useSpeechRecognizer'
 import { useSpeechSynthesis } from './useSpeechSynthesis'
 import { fuzzyMatch } from '../utils/fuzzyMatch'
 import { playSuccess, playError } from '../utils/soundEffects'
-import { buildDeck, getNextWord } from '../utils/wordDeck'
+import { buildDeck, getNextWord, flattenWords } from '../utils/wordDeck'
 import { speakPraise } from '../components/Paper'
 import { CELEBRATION_KINDS } from '../components/Celebrations'
 
@@ -12,12 +12,10 @@ const PRAISE_PHRASES = ['Brawo!', 'Super!', 'Świetnie!', 'Tak jest!', 'Wspanial
 function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)] }
 
 function pickDistractors(word, allWords, selectedCategories, count = 3) {
-  const ids = selectedCategories && selectedCategories.length > 0
-    ? selectedCategories : Object.keys(allWords)
-  const pool = ids.flatMap(id => allWords[id] ?? []).filter(w => w.word !== word.word)
+  const pool = flattenWords(allWords, selectedCategories).filter(w => w.word !== word.word)
   // If selected categories don't have enough distractors, pull from all categories
   const fallback = pool.length < count
-    ? Object.keys(allWords).flatMap(id => allWords[id] ?? []).filter(w => w.word !== word.word)
+    ? flattenWords(allWords, null).filter(w => w.word !== word.word)
     : pool
   return shuffleArray(fallback).slice(0, count)
 }

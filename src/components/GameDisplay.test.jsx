@@ -89,12 +89,12 @@ describe('GameDisplay (cut-paper)', () => {
 
   test('does not render the English translation when showTranslation is false', () => {
     render(<GameDisplay {...defaultProps} showTranslation={false} />)
-    expect(screen.queryByText('square')).not.toBeInTheDocument()
+    expect(screen.getByText('square').parentElement).toHaveStyle({ opacity: 0 })
   })
 
   test('renders the English translation under the word when showTranslation is true', () => {
     render(<GameDisplay {...defaultProps} showTranslation={true} />)
-    expect(screen.getByText('square')).toBeInTheDocument()
+    expect(screen.getByText('square').parentElement).toHaveStyle({ opacity: 1 })
   })
 
   test('renders translation toggle reflecting prop value', () => {

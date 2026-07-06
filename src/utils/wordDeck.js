@@ -2,7 +2,7 @@ export function flattenWords(words, selectedCategories) {
   const ids = selectedCategories && selectedCategories.length > 0
     ? selectedCategories
     : Object.keys(words)
-  return ids.flatMap(id => words[id] ?? [])
+  return ids.flatMap(id => (words[id] ?? []).map(w => ({ ...w, category: id })))
 }
 
 export function buildDeck(words, selectedCategories) {

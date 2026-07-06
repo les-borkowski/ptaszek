@@ -1,5 +1,6 @@
 import { useMemo, useEffect, useRef, useState } from 'react'
 import { wordToFilename } from '../utils/audioFilename'
+import { PlainWordArt, PLAIN_ART_CATEGORIES } from './PlainWordArt'
 
 /* =====================================================
    Paper.jsx — cut-paper primitives.
@@ -101,6 +102,9 @@ export function WordImage({ word, size, fill = false, style }) {
   }
 
   if (broken) {
+    if (PLAIN_ART_CATEGORIES.has(word.category)) {
+      return <PlainWordArt word={word} size={size} fill={fill} style={style} />
+    }
     return <span style={{ fontSize: size, lineHeight: 1, ...style }}>{word.emoji}</span>
   }
   const dims = fill ? { width: '100%', height: '100%' } : { width: size, height: size }
@@ -114,35 +118,49 @@ export function WordImage({ word, size, fill = false, style }) {
   )
 }
 
-/* ---------- WordLabel — torn-paper tag showing a word's text ---------- */
+/* ---------- WordLabel — torn-paper tag showing a word's text, with a second
+   pale-blue clip peeking out from behind it for the English translation ---------- */
 export function WordLabel({ word, size = 220, seed = 7, showTranslation = false }) {
   const radLabel = useMemo(() => tornRadii(seed + 2, 14, 8), [seed])
+  const radTranslation = useMemo(() => tornRadii(seed + 6, 16, 10), [seed])
   return (
-    <PaperLayer color={PALETTE.cream} rotate={-2} shadow={5} style={{
-      borderRadius: radLabel,
-      padding: '8px 20px',
-      maxWidth: size + 40,
-    }}>
-      <div style={{
-        fontFamily: 'var(--f-display)',
-        fontWeight: 700,
-        fontSize: size * 0.09,
-        color: PALETTE.ink,
-        letterSpacing: 0.5,
-        textAlign: 'center',
-      }}>{word.word}</div>
-      {showTranslation && word.translation && (
+    <div style={{ position: 'relative', display: 'inline-flex' }}>
+      <PaperLayer color={PALETTE.cream} rotate={-2} shadow={5} style={{
+        borderRadius: radLabel,
+        padding: '8px 20px',
+        maxWidth: size + 40,
+      }}>
         <div style={{
-          fontFamily: 'var(--f-marker)',
-          fontWeight: 600,
-          fontSize: size * 0.062,
+          fontFamily: 'var(--f-display)',
+          fontWeight: 700,
+          fontSize: size * 0.09,
           color: PALETTE.ink,
-          opacity: 0.62,
+          letterSpacing: 0.5,
           textAlign: 'center',
-          marginTop: 2,
-        }}>{word.translation}</div>
+        }}>{word.word}</div>
+      </PaperLayer>
+      {word.translation && (
+        <PaperLayer color={PALETTE.sky} rotate={5} shadow={4} style={{
+          position: 'absolute',
+          bottom: -14,
+          right: -10,
+          borderRadius: radTranslation,
+          padding: '4px 14px',
+          whiteSpace: 'nowrap',
+          opacity: showTranslation ? 1 : 0,
+          pointerEvents: showTranslation ? 'auto' : 'none',
+          transition: 'opacity 0.15s ease',
+        }}>
+          <div style={{
+            fontFamily: 'var(--f-marker)',
+            fontWeight: 600,
+            fontSize: size * 0.062,
+            color: PALETTE.ink,
+            textAlign: 'center',
+          }}>{word.translation}</div>
+        </PaperLayer>
       )}
-    </PaperLayer>
+    </div>
   )
 }
 

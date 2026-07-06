@@ -31,12 +31,11 @@ export function HearAndTouchDisplay({
             )}
           </div>
 
-          {/* Learn-mode word label — revealed above the grid when the 🤫 toggle is on */}
-          {learnMode && (
-            <div className="hat-word-label">
-              <WordLabel word={word} size={160} showTranslation={showTranslation} />
-            </div>
-          )}
+          {/* Learn-mode word label — always occupies its slot so the grid below never
+              shifts; only its visibility toggles with the 🤫 toggle. */}
+          <div className={`hat-word-label${learnMode ? '' : ' hat-word-label--hidden'}`} aria-hidden={!learnMode}>
+            <WordLabel word={word} size={160} showTranslation={showTranslation} />
+          </div>
 
           {/* 2×2 image card grid — centred vertically via auto margins */}
           <div className={`hat-grid${status === 'incorrect' ? ' hat-grid--shake' : ''}`}>
@@ -60,7 +59,10 @@ export function HearAndTouchDisplay({
 
           {/* Speaker button + learn-mode toggle (mirrors GameDisplay mic-cluster) */}
           <div className="mic-cluster">
-            <label className={`hint-badge hint-badge--en${showTranslation ? ' hint-badge--on' : ''}`}>
+            <label
+              className={`hint-badge hint-badge--en${showTranslation ? ' hint-badge--on' : ''}`}
+              data-tooltip="Pokaż tłumaczenie"
+            >
               <input
                 type="checkbox"
                 checked={showTranslation}
@@ -68,9 +70,11 @@ export function HearAndTouchDisplay({
                 aria-label="Pokaż tłumaczenie angielskie"
               />
               🇬🇧
-              <span className="badge-caption">EN</span>
             </label>
-            <label className={`hint-badge${learnMode ? ' hint-badge--on' : ''}`}>
+            <label
+              className={`hint-badge${learnMode ? ' hint-badge--on' : ''}`}
+              data-tooltip="Tryb nauki"
+            >
               <input
                 type="checkbox"
                 checked={learnMode}
@@ -78,7 +82,6 @@ export function HearAndTouchDisplay({
                 aria-label="Tryb nauki: pokaż i wymów słowo"
               />
               🤫
-              <span className="badge-caption">nauka</span>
             </label>
             <MicButton
               onClick={onSpeak}
