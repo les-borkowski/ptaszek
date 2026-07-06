@@ -1,4 +1,10 @@
+import { useRef } from 'react'
+import { useModalA11y } from '../hooks/useModalA11y'
+
 export function CategoriesModal({ categories, selected, onClose, onChange }) {
+  const cardRef = useRef(null)
+  useModalA11y(cardRef, onClose)
+
   const allSelected = selected === null || selected === undefined
   const noneSelected = selected !== null && selected !== undefined && selected.length === 0
 
@@ -23,7 +29,14 @@ export function CategoriesModal({ categories, selected, onClose, onChange }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-card" onClick={e => e.stopPropagation()}>
+      <div
+        className="modal-card"
+        onClick={e => e.stopPropagation()}
+        ref={cardRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Kategorie"
+      >
         <div className="modal-header">
           <span style={{ fontWeight: 700, fontSize: 20 }}>Kategorie</span>
           <button className="modal-close" onClick={onClose}>✕</button>

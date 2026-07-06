@@ -1,178 +1,70 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { GameDisplay } from './components/GameDisplay'
 import { HearAndTouchDisplay } from './components/HearAndTouchDisplay'
 import { TitleScreen } from './components/TitleScreen'
 import { ScoresScreen } from './components/ScoresScreen'
-import { useSpeechRecognizer } from './hooks/useSpeechRecognizer'
-import { useSpeechSynthesis } from './hooks/useSpeechSynthesis'
-import { fuzzyMatch } from './utils/fuzzyMatch'
-import { playSuccess, playError } from './utils/soundEffects'
-import { buildDeck, getNextWord } from './utils/wordDeck'
-import { speakPraise } from './components/Paper'
-import { CELEBRATION_KINDS } from './components/Celebrations'
+import { useGameLoop } from './hooks/useGameLoop'
+import { getString, setString, getJSON, setJSON } from './utils/safeStorage'
 import words from './data/words.json'
 import categories from './data/categories.json'
 import './App.css'
 
-const PRAISE_PHRASES = ['Brawo!', 'Super!', 'Świetnie!', 'Tak jest!', 'Wspaniale!', 'Pięknie!']
-
-function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)] }
-
-function pickDistractors(word, allWords, selectedCategories, count = 3) {
-  const ids = selectedCategories && selectedCategories.length > 0
-    ? selectedCategories : Object.keys(allWords)
-  const pool = ids.flatMap(id => allWords[id] ?? []).filter(w => w.word !== word.word)
-  // If selected categories don't have enough distractors, pull from all categories
-  const fallback = pool.length < count
-    ? Object.keys(allWords).flatMap(id => allWords[id] ?? []).filter(w => w.word !== word.word)
-    : pool
-  return shuffleArray(fallback).slice(0, count)
-}
-
-function shuffleArray(arr) {
-  const a = [...arr]
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
-}
-
 function loadScores() {
-  try { return JSON.parse(localStorage.getItem('słowik_scores')) || [] } catch { return [] }
+  return getJSON('słowik_scores', [])
 }
 function saveScore({ player, score, mode }) {
   const entries = loadScores()
   entries.push({ player, score, mode, date: new Date().toISOString() })
   entries.sort((a, b) => b.score - a.score)
-  localStorage.setItem('słowik_scores', JSON.stringify(entries.slice(0, 50)))
+  setJSON('słowik_scores', entries.slice(0, 50))
 }
 function loadPlayers() {
-  try { return JSON.parse(localStorage.getItem('słowik_players')) || [] } catch { return [] }
+  return getJSON('słowik_players', [])
 }
 function savePlayers(players) {
-  localStorage.setItem('słowik_players', JSON.stringify(players.slice(0, 8)))
+  setJSON('słowik_players', players.slice(0, 8))
 }
 
 export default function App() {
-  const [wordState, setWordState] = useState(() => {
-    const shuffled = buildDeck(words, null)
-    return { currentWord: shuffled[0], deck: shuffled.slice(1) }
-  })
-  const { currentWord, deck } = wordState
-
-  const [score, setScore] = useState(0)
-  const [status, setStatus] = useState('listening')
-  const [celebration, setCelebration] = useState(null)
   const [learnMode, setLearnMode] = useState(
-    () => localStorage.getItem('learnMode') === 'true'
+    () => getString('learnMode') === 'true'
+  )
+  const [showTranslation, setShowTranslation] = useState(
+    () => getString('słowik_show_translation') === 'true'
   )
 
   const [screen, setScreen] = useState('title')
   const [player, setPlayer] = useState(
-    () => localStorage.getItem('słowik_last_player') || 'Gracz'
+    () => getString('słowik_last_player') || 'Gracz'
   )
   const [players, setPlayers] = useState(() => loadPlayers())
   const [mode, setMode] = useState('say')
-  const [selectedCategories, setSelectedCategories] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('słowik_categories')) } catch { return null }
-  })
-  const [hearOptions, setHearOptions] = useState([])
+  const [selectedCategories, setSelectedCategories] = useState(
+    () => getJSON('słowik_categories')
+  )
 
-  const { transcript, error, start, stop, isListening } = useSpeechRecognizer()
-  const { speak, isSpeaking } = useSpeechSynthesis()
-  const prevIsSpeakingRef = useRef(false)
-  const lastProcessedTranscript = useRef('')
-  const pendingTimeoutRef = useRef(null)
-
-  // On each new word while game is active: speak (learn mode) or listen directly
-  useEffect(() => {
-    if (screen !== 'game' || mode === 'hear') return
-    lastProcessedTranscript.current = ''
-    if (learnMode) {
-      speak(currentWord.word)
-    } else {
-      start()
-    }
-  }, [currentWord, screen]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // After TTS finishes (true→false), start listening — but not in hear mode
-  useEffect(() => {
-    if (prevIsSpeakingRef.current && !isSpeaking && mode !== 'hear') {
-      start()
-    }
-    prevIsSpeakingRef.current = isSpeaking
-  }, [isSpeaking]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // React to speech recognition results
-  useEffect(() => {
-    if (!transcript || status !== 'listening') return
-    if (transcript === lastProcessedTranscript.current) return
-    lastProcessedTranscript.current = transcript
-
-    if (fuzzyMatch(transcript, currentWord.word)) {
-      const newScore = score + 1
-      const isMilestone = newScore % 5 === 0
-      const cel = isMilestone ? 'fireworks' : pickRandom(CELEBRATION_KINDS)
-      const phrase = isMilestone ? 'Wspaniale!' : pickRandom(PRAISE_PHRASES)
-      setScore(newScore)
-      setStatus('correct')
-      setCelebration({ kind: cel, key: Date.now() })
-      playSuccess()
-      speakPraise(phrase)
-      const delay = isMilestone ? 2400 : 1600
-      pendingTimeoutRef.current = setTimeout(() => {
-        pendingTimeoutRef.current = null
-        setCelebration(null)
-        setWordState(({ deck: d }) => {
-          const { word, remainingDeck } = getNextWord(d, words, selectedCategories)
-          return { currentWord: word, deck: remainingDeck }
-        })
-        setStatus('listening')
-      }, delay)
-    } else {
-      setStatus('incorrect')
-      playError()
-      pendingTimeoutRef.current = setTimeout(() => {
-        pendingTimeoutRef.current = null
-        setStatus('listening')
-        start()
-      }, 1500)
-    }
-  }, [transcript]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (mode !== 'hear' || screen !== 'game') return
-    const distractors = pickDistractors(currentWord, words, selectedCategories)
-    setHearOptions(shuffleArray([currentWord, ...distractors]))
-    speak(currentWord.word)
-  }, [currentWord, mode, screen]) // eslint-disable-line react-hooks/exhaustive-deps
+  const {
+    currentWord, score, status, celebration, hearOptions, error, isListening,
+    handleSpeak, handleSkip, handleHearSelect, resetGame,
+  } = useGameLoop({ words, selectedCategories, mode, screen, learnMode })
 
   const handleLearnModeChange = (value) => {
     setLearnMode(value)
-    localStorage.setItem('learnMode', String(value))
+    setString('learnMode', String(value))
   }
 
-  const handleSpeak = () => {
-    if (isListening) stop()
-    speak(currentWord.word)
+  const handleShowTranslationChange = (value) => {
+    setShowTranslation(value)
+    setString('słowik_show_translation', String(value))
   }
 
   function handlePlay() {
-    const newDeck = buildDeck(words, selectedCategories)
-    if (newDeck.length === 0) return
-    setWordState({ currentWord: newDeck[0], deck: newDeck.slice(1) })
-    setScore(0)
-    setStatus('listening')
-    setCelebration(null)
-    setScreen('game')
+    if (resetGame()) setScreen('game')
   }
 
   function handleBackToTitle() {
     if (score > 0) saveScore({ player, score, mode })
-    setScore(0)
-    setStatus('listening')
-    setCelebration(null)
+    resetGame()
     setScreen('title')
   }
 
@@ -180,7 +72,7 @@ export default function App() {
     const trimmed = name.trim()
     if (!trimmed) return
     setPlayer(trimmed)
-    localStorage.setItem('słowik_last_player', trimmed)
+    setString('słowik_last_player', trimmed)
     const prev = loadPlayers().filter(p => p !== trimmed)
     const updated = [trimmed, ...prev]
     savePlayers(updated)
@@ -189,53 +81,7 @@ export default function App() {
 
   function handleCategoriesChange(cats) {
     setSelectedCategories(cats)
-    localStorage.setItem('słowik_categories', JSON.stringify(cats))
-  }
-
-  function handleHearSelect(option) {
-    if (status !== 'listening') return
-    if (option.word === currentWord.word) {
-      const newScore = score + 1
-      const isMilestone = newScore % 5 === 0
-      const cel = isMilestone ? 'fireworks' : pickRandom(CELEBRATION_KINDS)
-      const phrase = isMilestone ? 'Wspaniale!' : pickRandom(PRAISE_PHRASES)
-      setScore(newScore)
-      setStatus('correct')
-      setCelebration({ kind: cel, key: Date.now() })
-      playSuccess()
-      speakPraise(phrase)
-      const delay = isMilestone ? 2400 : 1600
-      pendingTimeoutRef.current = setTimeout(() => {
-        pendingTimeoutRef.current = null
-        setCelebration(null)
-        setWordState(({ deck: d }) => {
-          const { word, remainingDeck } = getNextWord(d, words, selectedCategories)
-          return { currentWord: word, deck: remainingDeck }
-        })
-        setStatus('listening')
-      }, delay)
-    } else {
-      setStatus('incorrect')
-      playError()
-      pendingTimeoutRef.current = setTimeout(() => {
-        pendingTimeoutRef.current = null
-        setStatus('listening')
-      }, 1500)
-    }
-  }
-
-  function handleSkip() {
-    if (pendingTimeoutRef.current) {
-      clearTimeout(pendingTimeoutRef.current)
-      pendingTimeoutRef.current = null
-    }
-    if (isListening) stop()
-    setCelebration(null)
-    setStatus('listening')
-    setWordState(({ deck: d }) => {
-      const { word, remainingDeck } = getNextWord(d, words, selectedCategories)
-      return { currentWord: word, deck: remainingDeck }
-    })
+    setJSON('słowik_categories', cats)
   }
 
   return (
@@ -266,7 +112,10 @@ export default function App() {
           status={status}
           celebration={celebration}
           learnMode={learnMode}
+          isListening={isListening}
           onLearnModeChange={handleLearnModeChange}
+          showTranslation={showTranslation}
+          onShowTranslationChange={handleShowTranslationChange}
           onSpeak={handleSpeak}
           onBack={handleBackToTitle}
           onSkip={handleSkip}
@@ -281,6 +130,8 @@ export default function App() {
           celebration={celebration}
           learnMode={learnMode}
           onLearnModeChange={handleLearnModeChange}
+          showTranslation={showTranslation}
+          onShowTranslationChange={handleShowTranslationChange}
           onSelect={handleHearSelect}
           onBack={handleBackToTitle}
           onSpeak={handleSpeak}

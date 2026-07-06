@@ -10,7 +10,7 @@ export const TRANSITION_KINDS = ['slide', 'flip', 'drop', 'tear', 'pop']
 
 function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)] }
 
-export function WordTransition({ word, size = 220 }) {
+export function WordTransition({ word, size = 220, showTranslation = false }) {
   const [variant, setVariant] = useState(() => pickRandom(TRANSITION_KINDS))
   const [renderKey, setRenderKey] = useState(0)
   const prev = useRef(word.word)
@@ -31,7 +31,7 @@ export function WordTransition({ word, size = 220 }) {
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
       <div key={renderKey} className={`word-trans word-trans-${variant}`}>
-        <WordCard word={word} size={size} />
+        <WordCard word={word} size={size} showTranslation={showTranslation} />
       </div>
     </div>
   )

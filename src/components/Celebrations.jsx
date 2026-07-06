@@ -23,7 +23,7 @@ function PraiseTag({ text, color = PALETTE.coral, size = 38, rotate = -4, style 
 }
 
 /* ---------- 1. Confetti scraps burst ---------- */
-function CelConfetti({ playKey, word }) {
+function CelConfetti({ playKey }) {
   const bits = useMemo(() => {
     const rng = mulberry32(playKey)
     const colors = PRAISE_COLORS
@@ -66,7 +66,7 @@ function CelConfetti({ playKey, word }) {
 }
 
 /* ---------- 2. Paper-star stamp ---------- */
-function CelStamp({ playKey, word }) {
+function CelStamp({ playKey }) {
   return (
     <div key={playKey} className="cel-root">
       <div style={{
@@ -117,7 +117,7 @@ function CelMultiply({ playKey, word }) {
 }
 
 /* ---------- 4. Praise balloons (paper tags float up) ---------- */
-function CelBalloons({ playKey, word }) {
+function CelBalloons({ playKey }) {
   const items = useMemo(() => {
     const rng = mulberry32(playKey)
     const phrases = ['Brawo!', 'Super!', 'Tak!', 'Świetnie!', 'Pięknie!']
@@ -147,7 +147,7 @@ function CelBalloons({ playKey, word }) {
 }
 
 /* ---------- 5. Paper-arc rainbow sweep ---------- */
-function CelRainbow({ playKey, word }) {
+function CelRainbow({ playKey }) {
   const arcs = [PALETTE.coral, PALETTE.mustard, PALETTE.mint, PALETTE.navy, PALETTE.rose]
   return (
     <div key={playKey} className="cel-root">
@@ -173,7 +173,7 @@ function CelRainbow({ playKey, word }) {
 }
 
 /* ---------- 6. Plus-one drumroll ---------- */
-function CelPlusOne({ playKey, word }) {
+function CelPlusOne({ playKey }) {
   return (
     <div key={playKey} className="cel-root">
       <div style={{ position: 'absolute', top: '16%', display: 'flex', gap: 12 }}>
@@ -202,7 +202,7 @@ function CelPlusOne({ playKey, word }) {
 }
 
 /* ---------- 7. Milestone fireworks (paper bursts) ---------- */
-function CelFireworks({ playKey, word }) {
+function CelFireworks({ playKey }) {
   const bursts = [
     { x: 28, y: 28, c: PALETTE.coral,   d: 0 },
     { x: 72, y: 22, c: PALETTE.navy,    d: 200 },

@@ -22,6 +22,9 @@ export function GameDisplay({
   celebration,
   learnMode = false,
   onLearnModeChange = () => {},
+  showTranslation = false,
+  onShowTranslationChange = () => {},
+  isListening = false,
   onSpeak = () => {},
   onBack = () => {},
   onSkip = () => {},
@@ -33,6 +36,7 @@ export function GameDisplay({
         <Scene score={score} />
 
         <div className="game-shell-inner">
+          <div className="sr-only" aria-live="polite">Punkty: {score}</div>
           {/* Header — back nav + paper chain (left) | prompt bubble (right) */}
           <div className="game-header">
             <div className="game-header-start">
@@ -54,7 +58,7 @@ export function GameDisplay({
 
           {/* Word card */}
           <div className={`word-area status-${status}`}>
-            <WordTransition word={word} size={250} />
+            <WordTransition word={word} size={250} showTranslation={showTranslation} />
             {status === 'correct' && celebration && (
               <div className="celebration-overlay">
                 <Celebration kind={celebration.kind} word={word} playKey={celebration.key} />
@@ -69,15 +73,27 @@ export function GameDisplay({
 
           {/* Controls — mic + hint badge cluster (bottom-right) */}
           <div className="mic-cluster">
+            <label className={`hint-badge hint-badge--en${showTranslation ? ' hint-badge--on' : ''}`}>
+              <input
+                type="checkbox"
+                checked={showTranslation}
+                onChange={(e) => onShowTranslationChange(e.target.checked)}
+                aria-label="Pokaż tłumaczenie angielskie"
+              />
+              🇬🇧
+              <span className="badge-caption">EN</span>
+            </label>
             <label className={`hint-badge${learnMode ? ' hint-badge--on' : ''}`}>
               <input
                 type="checkbox"
                 checked={learnMode}
                 onChange={(e) => onLearnModeChange(e.target.checked)}
+                aria-label="Tryb nauki: pokaż i wymów słowo"
               />
               🤫
+              <span className="badge-caption">nauka</span>
             </label>
-            <MicButton onClick={onSpeak} />
+            <MicButton onClick={onSpeak} listening={isListening} />
           </div>
 
         </div>

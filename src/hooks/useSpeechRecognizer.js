@@ -16,7 +16,7 @@ export function useSpeechRecognizer() {
       watchdogRef.current = null
     }
     if (recognitionRef.current) {
-      try { recognitionRef.current.stop() } catch (_) {}
+      try { recognitionRef.current.stop() } catch { /* already stopped */ }
       recognitionRef.current = null
     }
   }, [])
@@ -79,14 +79,14 @@ export function useSpeechRecognizer() {
     watchdogRef.current = setTimeout(() => {
       watchdogRef.current = null
       if (recognitionRef.current) {
-        try { recognitionRef.current.stop() } catch (_) {}
+        try { recognitionRef.current.stop() } catch { /* already stopped */ }
         recognitionRef.current = null
       }
       startRef.current?.()
     }, WATCHDOG_MS)
   }, [stopExisting])
 
-  startRef.current = start
+  useEffect(() => { startRef.current = start }, [start])
 
   const stop = useCallback(() => {
     stopExisting()
@@ -101,7 +101,7 @@ export function useSpeechRecognizer() {
         watchdogRef.current = null
       }
       if (recognitionRef.current) {
-        try { recognitionRef.current.stop() } catch (_) {}
+        try { recognitionRef.current.stop() } catch { /* already stopped */ }
         recognitionRef.current = null
       }
     }

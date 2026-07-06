@@ -92,9 +92,13 @@ function tornRadii(seed, base = 38, spread = 10) {
    tile), instead of sizing to `size` and letterboxing inside it. */
 export function WordImage({ word, size, fill = false, style }) {
   const [broken, setBroken] = useState(false)
+  const [prevWord, setPrevWord] = useState(word.word)
   // Reset on word change — WordCard doesn't always remount between words
   // (see WordTransition), so a stale "broken" flag could otherwise stick.
-  useEffect(() => { setBroken(false) }, [word.word])
+  if (prevWord !== word.word) {
+    setPrevWord(word.word)
+    setBroken(false)
+  }
 
   if (broken) {
     return <span style={{ fontSize: size, lineHeight: 1, ...style }}>{word.emoji}</span>
@@ -111,7 +115,7 @@ export function WordImage({ word, size, fill = false, style }) {
 }
 
 /* ---------- WordLabel — torn-paper tag showing a word's text ---------- */
-export function WordLabel({ word, size = 220, seed = 7 }) {
+export function WordLabel({ word, size = 220, seed = 7, showTranslation = false }) {
   const radLabel = useMemo(() => tornRadii(seed + 2, 14, 8), [seed])
   return (
     <PaperLayer color={PALETTE.cream} rotate={-2} shadow={5} style={{
@@ -127,12 +131,23 @@ export function WordLabel({ word, size = 220, seed = 7 }) {
         letterSpacing: 0.5,
         textAlign: 'center',
       }}>{word.word}</div>
+      {showTranslation && word.translation && (
+        <div style={{
+          fontFamily: 'var(--f-marker)',
+          fontWeight: 600,
+          fontSize: size * 0.062,
+          color: PALETTE.ink,
+          opacity: 0.62,
+          textAlign: 'center',
+          marginTop: 2,
+        }}>{word.translation}</div>
+      )}
     </PaperLayer>
   )
 }
 
 /* ---------- WordCard — layered paper picture + a separate word tag ---------- */
-export function WordCard({ word, size = 220, seed = 7 }) {
+export function WordCard({ word, size = 220, seed = 7, showTranslation = false }) {
   const radBack  = useMemo(() => tornRadii(seed, 10, 6),      [seed])
   const radFront = useMemo(() => tornRadii(seed + 1, 10, 6),  [seed])
   return (
@@ -154,7 +169,7 @@ export function WordCard({ word, size = 220, seed = 7 }) {
         </PaperLayer>
       </div>
 
-      <WordLabel word={word} size={size} seed={seed} />
+      <WordLabel word={word} size={size} seed={seed} showTranslation={showTranslation} />
     </div>
   )
 }
@@ -247,12 +262,12 @@ export function SpeechBubble({ children, style }) {
 }
 
 /* ---------- MicButton — coral paper circle ---------- */
-export function MicButton({ onClick, label = '🎤', ariaLabel = 'Wymów słowo', color = PALETTE.coral, disabled = false }) {
+export function MicButton({ onClick, label = '🎤', ariaLabel = 'Wymów słowo', color = PALETTE.coral, disabled = false, listening = false }) {
   return (
     <button
       onClick={onClick}
       aria-label={ariaLabel}
-      className="paper-mic"
+      className={`paper-mic${listening ? ' paper-mic--listening' : ''}`}
       disabled={disabled}
       style={{
         background: color,

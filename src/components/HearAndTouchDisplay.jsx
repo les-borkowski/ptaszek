@@ -4,11 +4,13 @@ import { Celebration } from './Celebrations'
 export function HearAndTouchDisplay({
   word, options, score, status, celebration, onSelect, onBack, onSpeak, onSkip = () => {},
   learnMode = false, onLearnModeChange = () => {},
+  showTranslation = false, onShowTranslationChange = () => {},
 }) {
   return (
     <div className="game-shell">
       <div className="game-kraft">
         <div className="game-shell-inner hat-screen">
+          <div className="sr-only" aria-live="polite">Punkty: {score}</div>
 
           {/* Header — back nav + score (left)  |  game title bubble (right) */}
           <div className="game-header">
@@ -32,7 +34,7 @@ export function HearAndTouchDisplay({
           {/* Learn-mode word label — revealed above the grid when the 🤫 toggle is on */}
           {learnMode && (
             <div className="hat-word-label">
-              <WordLabel word={word} size={160} />
+              <WordLabel word={word} size={160} showTranslation={showTranslation} />
             </div>
           )}
 
@@ -58,13 +60,25 @@ export function HearAndTouchDisplay({
 
           {/* Speaker button + learn-mode toggle (mirrors GameDisplay mic-cluster) */}
           <div className="mic-cluster">
+            <label className={`hint-badge hint-badge--en${showTranslation ? ' hint-badge--on' : ''}`}>
+              <input
+                type="checkbox"
+                checked={showTranslation}
+                onChange={(e) => onShowTranslationChange(e.target.checked)}
+                aria-label="Pokaż tłumaczenie angielskie"
+              />
+              🇬🇧
+              <span className="badge-caption">EN</span>
+            </label>
             <label className={`hint-badge${learnMode ? ' hint-badge--on' : ''}`}>
               <input
                 type="checkbox"
                 checked={learnMode}
                 onChange={(e) => onLearnModeChange(e.target.checked)}
+                aria-label="Tryb nauki: pokaż i wymów słowo"
               />
               🤫
+              <span className="badge-caption">nauka</span>
             </label>
             <MicButton
               onClick={onSpeak}

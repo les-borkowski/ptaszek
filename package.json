@@ -8,6 +8,7 @@
     "build": "vite build",
     "generate:audio": "node scripts/generate-audio.mjs",
     "generate:images:gemini": "node scripts/generate-images-gemini.mjs",
+    "check:assets": "node scripts/check-assets.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",

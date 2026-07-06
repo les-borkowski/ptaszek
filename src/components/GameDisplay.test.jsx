@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, test, expect, vi } from 'vitest'
 import { GameDisplay } from './GameDisplay'
 
-const mockWord = { word: 'kwadrat', emoji: '🟥' }
+const mockWord = { word: 'kwadrat', emoji: '🟥', translation: 'square' }
 
 const defaultProps = {
   word: mockWord,
@@ -12,6 +12,8 @@ const defaultProps = {
   celebration: null,
   learnMode: false,
   onLearnModeChange: () => {},
+  showTranslation: false,
+  onShowTranslationChange: () => {},
   onSpeak: () => {},
 }
 
@@ -70,17 +72,44 @@ describe('GameDisplay (cut-paper)', () => {
   })
 
   test('renders learn-mode toggle reflecting prop value', () => {
+    const learnToggle = { name: /Tryb nauki/i }
     const { rerender } = render(<GameDisplay {...defaultProps} learnMode={false} />)
-    expect(screen.getByRole('checkbox')).not.toBeChecked()
+    expect(screen.getByRole('checkbox', learnToggle)).not.toBeChecked()
 
     rerender(<GameDisplay {...defaultProps} learnMode={true} />)
-    expect(screen.getByRole('checkbox')).toBeChecked()
+    expect(screen.getByRole('checkbox', learnToggle)).toBeChecked()
   })
 
   test('calls onLearnModeChange(true) when unchecked toggle is clicked', async () => {
     const onChange = vi.fn()
     render(<GameDisplay {...defaultProps} learnMode={false} onLearnModeChange={onChange} />)
-    await userEvent.click(screen.getByRole('checkbox'))
+    await userEvent.click(screen.getByRole('checkbox', { name: /Tryb nauki/i }))
+    expect(onChange).toHaveBeenCalledWith(true)
+  })
+
+  test('does not render the English translation when showTranslation is false', () => {
+    render(<GameDisplay {...defaultProps} showTranslation={false} />)
+    expect(screen.queryByText('square')).not.toBeInTheDocument()
+  })
+
+  test('renders the English translation under the word when showTranslation is true', () => {
+    render(<GameDisplay {...defaultProps} showTranslation={true} />)
+    expect(screen.getByText('square')).toBeInTheDocument()
+  })
+
+  test('renders translation toggle reflecting prop value', () => {
+    const enToggle = { name: /tłumaczenie/i }
+    const { rerender } = render(<GameDisplay {...defaultProps} showTranslation={false} />)
+    expect(screen.getByRole('checkbox', enToggle)).not.toBeChecked()
+
+    rerender(<GameDisplay {...defaultProps} showTranslation={true} />)
+    expect(screen.getByRole('checkbox', enToggle)).toBeChecked()
+  })
+
+  test('calls onShowTranslationChange(true) when unchecked EN toggle is clicked', async () => {
+    const onChange = vi.fn()
+    render(<GameDisplay {...defaultProps} showTranslation={false} onShowTranslationChange={onChange} />)
+    await userEvent.click(screen.getByRole('checkbox', { name: /tłumaczenie/i }))
     expect(onChange).toHaveBeenCalledWith(true)
   })
 
@@ -111,5 +140,13 @@ describe('GameDisplay (cut-paper)', () => {
     expect(btn).toBeInTheDocument()
     await userEvent.click(btn)
     expect(onBack).toHaveBeenCalledTimes(1)
+  })
+
+  test('adds the listening-ring class to the mic button when isListening is true', () => {
+    const { rerender } = render(<GameDisplay {...defaultProps} isListening={false} />)
+    expect(screen.getByRole('button', { name: /Wymów słowo/i })).not.toHaveClass('paper-mic--listening')
+
+    rerender(<GameDisplay {...defaultProps} isListening={true} />)
+    expect(screen.getByRole('button', { name: /Wymów słowo/i })).toHaveClass('paper-mic--listening')
   })
 })

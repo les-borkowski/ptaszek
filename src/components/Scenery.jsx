@@ -1,4 +1,4 @@
-import { PaperLayer, PALETTE } from './Paper'
+import { PALETTE } from './Paper'
 
 /* =====================================================
    Scenery.jsx — cut-paper background scene that builds up.

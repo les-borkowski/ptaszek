@@ -57,7 +57,7 @@ describe('useSpeechSynthesis', () => {
     playAudio.mockRejectedValue(new Error('network error'))
     const { result } = renderHook(() => useSpeechSynthesis())
     await act(async () => {
-      try { await result.current.speak('pies') } catch (_) {}
+      try { await result.current.speak('pies') } catch { /* speak never rejects */ }
     })
     expect(result.current.isSpeaking).toBe(false)
   })

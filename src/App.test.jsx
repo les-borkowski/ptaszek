@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi, describe, test, expect, beforeEach } from 'vitest'
 
@@ -94,6 +94,34 @@ describe('App (cut-paper)', () => {
   })
 })
 
+describe('Translation toggle', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    localStorage.clear()
+    useSpeechRecognizer.mockReturnValue({
+      isListening: false, transcript: '', error: null,
+      start: vi.fn(), stop: vi.fn(),
+    })
+    useSpeechSynthesis.mockReturnValue({ speak: vi.fn(), isSpeaking: false })
+  })
+
+  test('persists the translation toggle to localStorage under słowik_show_translation', async () => {
+    render(<App />)
+    await userEvent.click(screen.getByRole('button', { name: /Graj/i }))
+
+    expect(localStorage.getItem('słowik_show_translation')).toBeNull()
+
+    await userEvent.click(screen.getByRole('checkbox', { name: /tłumaczenie/i }))
+    expect(localStorage.getItem('słowik_show_translation')).toBe('true')
+  })
+
+  test('restores the translation toggle from localStorage on mount', () => {
+    localStorage.setItem('słowik_show_translation', 'true')
+    render(<App />)
+    expect(screen.getByText(/Graj/i)).toBeInTheDocument()
+  })
+})
+
 describe('Skip button', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -124,7 +152,7 @@ describe('Skip button', () => {
 
   test('clicking Skip stops the recognizer when it is listening', async () => {
     const mockStop = vi.fn()
-    const { container } = enterSayModeGame({ isListening: true, stop: mockStop })
+    enterSayModeGame({ isListening: true, stop: mockStop })
     await userEvent.click(screen.getByRole('button', { name: /Graj/i }))
 
     await userEvent.click(screen.getByRole('button', { name: /Pomiń słowo/i }))
@@ -164,6 +192,97 @@ describe('Skip button', () => {
 
     // If the stale timeout had fired, this would have changed a second time
     expect(finalAlt).toBe(afterSkipAlt)
+
+    vi.useRealTimers()
+  })
+})
+
+describe('Game loop edge cases', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    localStorage.clear()
+  })
+
+  test('hear mode: tapping the correct card advances after the celebration delay', () => {
+    vi.useFakeTimers()
+    const mockSpeak = vi.fn()
+    useSpeechRecognizer.mockReturnValue({
+      isListening: false, transcript: '', error: null, start: vi.fn(), stop: vi.fn(),
+    })
+    useSpeechSynthesis.mockReturnValue({ speak: mockSpeak, isSpeaking: false })
+    render(<App />)
+
+    fireEvent.click(screen.getByText(/Usłysz i dotknij/i))
+    fireEvent.click(screen.getByRole('button', { name: /Graj/i }))
+
+    const firstSpoken = mockSpeak.mock.calls.at(-1)[0]
+    fireEvent.click(screen.getByRole('button', { name: firstSpoken }))
+
+    expect(screen.getAllByText(/Brawo!/i).length).toBeGreaterThan(0)
+
+    act(() => { vi.advanceTimersByTime(3000) })
+
+    // Celebration state (set directly inside the scheduled timeout callback,
+    // not behind an effect) has cleared and the screen is back to listening.
+    expect(screen.queryByText(/Brawo!/i)).not.toBeInTheDocument()
+    expect(screen.getByText(/Usłysz i dotknij/i)).toBeInTheDocument()
+
+    vi.useRealTimers()
+  })
+
+  test('back-to-title mid-celebration cancels the pending timeout (no stray advance)', () => {
+    vi.useFakeTimers()
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    useSpeechRecognizer.mockReturnValue({
+      isListening: true, transcript: '', error: null, start: vi.fn(), stop: vi.fn(),
+    })
+    useSpeechSynthesis.mockReturnValue({ speak: vi.fn(), isSpeaking: false })
+    const { rerender, container } = render(<App />)
+
+    fireEvent.click(screen.getByRole('button', { name: /Graj/i }))
+    const firstWordAlt = container.querySelector('.word-area img').alt
+
+    useSpeechRecognizer.mockReturnValue({
+      isListening: true, transcript: firstWordAlt, error: null, start: vi.fn(), stop: vi.fn(),
+    })
+    rerender(<App />)
+    expect(screen.getAllByText(/Brawo!/i).length).toBeGreaterThan(0)
+
+    fireEvent.click(screen.getByRole('button', { name: /Wróć do menu/i }))
+    expect(screen.getByText('Słowik')).toBeInTheDocument()
+
+    // Previously, this stray timeout would fire while on the title screen
+    // and silently advance the (now-hidden) deck. Confirm it's a no-op.
+    vi.advanceTimersByTime(3000)
+    expect(screen.getByText('Słowik')).toBeInTheDocument()
+    expect(consoleError).not.toHaveBeenCalled()
+
+    consoleError.mockRestore()
+    vi.useRealTimers()
+  })
+
+  test('incorrect transcript shows the retry bubble and restarts listening after 1.5s', () => {
+    vi.useFakeTimers()
+    const mockStart = vi.fn()
+    useSpeechRecognizer.mockReturnValue({
+      isListening: true, transcript: '', error: null, start: mockStart, stop: vi.fn(),
+    })
+    useSpeechSynthesis.mockReturnValue({ speak: vi.fn(), isSpeaking: false })
+    const { rerender } = render(<App />)
+
+    fireEvent.click(screen.getByRole('button', { name: /Graj/i }))
+    mockStart.mockClear()
+
+    useSpeechRecognizer.mockReturnValue({
+      isListening: true, transcript: 'zupełnie inne słowo', error: null, start: mockStart, stop: vi.fn(),
+    })
+    rerender(<App />)
+
+    expect(screen.getByText(/Spróbuj jeszcze raz/i)).toBeInTheDocument()
+    expect(mockStart).not.toHaveBeenCalled()
+
+    act(() => { vi.advanceTimersByTime(1500) })
+    expect(mockStart).toHaveBeenCalled()
 
     vi.useRealTimers()
   })

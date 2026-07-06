@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, test, expect, vi } from 'vitest'
 import { HearAndTouchDisplay } from './HearAndTouchDisplay'
 
-const mockWord = { word: 'pies', emoji: '🐶' }
+const mockWord = { word: 'pies', emoji: '🐶', translation: 'dog' }
 const mockOptions = [
   { word: 'pies', emoji: '🐶' },
   { word: 'kot',  emoji: '🐱' },
@@ -19,6 +19,8 @@ const defaultProps = {
   onSelect: () => {},
   onBack: () => {},
   onSpeak: () => {},
+  showTranslation: false,
+  onShowTranslationChange: () => {},
 }
 
 describe('HearAndTouchDisplay', () => {
@@ -107,17 +109,40 @@ describe('HearAndTouchDisplay', () => {
   })
 
   test('renders learn-mode toggle reflecting prop value', () => {
+    const learnToggle = { name: /Tryb nauki/i }
     const { rerender } = render(<HearAndTouchDisplay {...defaultProps} learnMode={false} />)
-    expect(screen.getByRole('checkbox')).not.toBeChecked()
+    expect(screen.getByRole('checkbox', learnToggle)).not.toBeChecked()
 
     rerender(<HearAndTouchDisplay {...defaultProps} learnMode={true} />)
-    expect(screen.getByRole('checkbox')).toBeChecked()
+    expect(screen.getByRole('checkbox', learnToggle)).toBeChecked()
   })
 
   test('calls onLearnModeChange(true) when unchecked toggle is clicked', async () => {
     const onChange = vi.fn()
     render(<HearAndTouchDisplay {...defaultProps} learnMode={false} onLearnModeChange={onChange} />)
-    await userEvent.click(screen.getByRole('checkbox'))
+    await userEvent.click(screen.getByRole('checkbox', { name: /Tryb nauki/i }))
+    expect(onChange).toHaveBeenCalledWith(true)
+  })
+
+  test('does not show the translation when learn mode is on but showTranslation is off', () => {
+    render(<HearAndTouchDisplay {...defaultProps} learnMode={true} showTranslation={false} />)
+    expect(screen.queryByText('dog')).not.toBeInTheDocument()
+  })
+
+  test('shows the translation only when both learn mode and showTranslation are on', () => {
+    render(<HearAndTouchDisplay {...defaultProps} learnMode={true} showTranslation={true} />)
+    expect(screen.getByText('dog')).toBeInTheDocument()
+  })
+
+  test('does not show the translation when showTranslation is on but learn mode is off', () => {
+    render(<HearAndTouchDisplay {...defaultProps} learnMode={false} showTranslation={true} />)
+    expect(screen.queryByText('dog')).not.toBeInTheDocument()
+  })
+
+  test('calls onShowTranslationChange(true) when unchecked EN toggle is clicked', async () => {
+    const onChange = vi.fn()
+    render(<HearAndTouchDisplay {...defaultProps} showTranslation={false} onShowTranslationChange={onChange} />)
+    await userEvent.click(screen.getByRole('checkbox', { name: /tłumaczenie/i }))
     expect(onChange).toHaveBeenCalledWith(true)
   })
 })

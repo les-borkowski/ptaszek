@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { useModalA11y } from '../hooks/useModalA11y'
 
 export function PlayerModal({ players, current, onClose, onSelect }) {
   const [input, setInput] = useState('')
+  const cardRef = useRef(null)
+  useModalA11y(cardRef, onClose)
 
   function handleSubmit() {
     const name = input.trim()
@@ -11,7 +14,14 @@ export function PlayerModal({ players, current, onClose, onSelect }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-card" onClick={e => e.stopPropagation()}>
+      <div
+        className="modal-card"
+        onClick={e => e.stopPropagation()}
+        ref={cardRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Wybierz gracza"
+      >
         <div className="modal-header">
           <span style={{ fontWeight: 700, fontSize: 20 }}>Wybierz gracza</span>
           <button className="modal-close" onClick={onClose}>✕</button>
