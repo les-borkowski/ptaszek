@@ -3,14 +3,15 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, unlinkSync } from '
 import { createSign } from 'crypto'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
+import 'dotenv/config'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
 
-const KEY_FILE = process.env.GOOGLE_APPLICATION_CREDENTIALS
+const KEY_FILE = process.env.GOOGLE_TTS_API_KEY
 if (!KEY_FILE) {
-  console.error('Error: GOOGLE_APPLICATION_CREDENTIALS env var must point to your service account JSON key file')
-  console.error('  export GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json')
+  console.error('Error: GOOGLE_TTS_API_KEY env var must point to your service account JSON key file')
+  console.error('  export GOOGLE_TTS_API_KEY=/path/to/key.json')
   process.exit(1)
 }
 
